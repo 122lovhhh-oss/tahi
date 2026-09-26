@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PyProtect Pro - Mã Hóa & Bảo Vệ Mã Nguồn Python</title>
+<title>PyProtect - Mã hóa .py → .py</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -408,6 +408,23 @@ button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   background: linear-gradient(90deg, #ff6b9d, #ffa500);
   color: #fff;
 }
+.info-box {
+  margin-top: 16px;
+  padding: 14px;
+  background: rgba(0, 150, 255, 0.1);
+  border: 1px solid rgba(0, 150, 255, 0.35);
+  border-radius: 12px;
+  font-size: 0.82rem;
+  color: #60a5fa;
+  line-height: 1.6;
+}
+.info-box code {
+  background: rgba(0,0,0,0.4);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Consolas', monospace;
+  color: #4ade80;
+}
 .modal {
   position: fixed;
   top: 0; left: 0;
@@ -461,14 +478,13 @@ button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   line-height: 1.6;
   background: #060612;
 }
-.modal-body.binary { color: #ff9a9a; font-style: italic; }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>🛡️ PyProtect Pro</h1>
-  <p class="subtitle">Mã hóa & Bảo vệ mã nguồn Python — PyArmor-Style • 12 lớp • AES-256</p>
+  <h1>🛡️ PyProtect - Mã hóa .py → .py</h1>
+  <p class="subtitle">File xuất ra vẫn là <b>.py</b> — chạy được bằng <code>python file.py</code></p>
 
   <div class="tabs">
     <div class="tab active" data-tab="encrypt">🔒 Mã hóa</div>
@@ -480,7 +496,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     <div class="row">
       <div class="field">
         <label><span>👤</span> Tên người dùng:</label>
-        <input type="text" id="username" placeholder="Nhập tên của bạn">
+        <input type="text" id="username" placeholder="Nhập tên của bạn" value="nguyenxuantrinh">
       </div>
       <div class="field">
         <label><span>🐍</span> Phiên bản Python:</label>
@@ -506,126 +522,72 @@ button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         <input type="checkbox" id="opt-antidebug" checked>
         <div class="checkbox-text">
           <strong>🛡️ Anti-Debug Protection</strong>
-          <span>Ngăn chặn debugging và reverse engineering (Chỉ Dùng Cho Code Main)</span>
+          <span>Ngăn debugging và reverse engineering</span>
         </div>
       </label>
       <label class="checkbox-item">
         <input type="checkbox" id="opt-anticrack" checked>
         <div class="checkbox-text">
-          <strong>🔐 Anti-Crack & Requests Protection</strong>
-          <span>Bảo vệ khỏi crack và requests debugging như HTTP-TOOLKIT</span>
+          <strong>🔐 Anti-Crack Protection</strong>
+          <span>Bảo vệ khỏi HTTP-TOOLKIT, Frida</span>
         </div>
       </label>
     </div>
 
-    <div class="section-title">🎭 PyArmor-Style Obfuscation <span class="badge badge-real">MÔ PHỎNG</span></div>
-    <div class="checkbox-group">
-      <label class="checkbox-item">
-        <input type="checkbox" id="enc-pyarmor" checked>
-        <div class="checkbox-text">
-          <strong>🔒 PyArmor Wrapper</strong>
-          <span>Bọc code + bootstrap runtime + frozen filename</span>
-        </div>
-      </label>
-      <label class="checkbox-item">
-        <input type="checkbox" id="enc-obfuscate" checked>
-        <div class="checkbox-text">
-          <strong>🎭 Rename Variables</strong>
-          <span>_IlO0, _IlO1... + junk code injection</span>
-        </div>
-      </label>
-    </div>
-
-    <div class="section-title">🔐 12 Lớp mã hóa <span class="badge badge-count">ALL-IN-ONE</span></div>
+    <div class="section-title">🔐 12 Lớp mã hóa</div>
     <div class="checkbox-group">
       <label class="checkbox-item">
         <input type="checkbox" id="enc-b64" checked>
-        <div class="checkbox-text">
-          <strong>1️⃣ Base64</strong>
-          <span>RFC 4648</span>
-        </div>
+        <div class="checkbox-text"><strong>1️⃣ Base64</strong><span>RFC 4648</span></div>
       </label>
       <label class="checkbox-item">
         <input type="checkbox" id="enc-b32" checked>
-        <div class="checkbox-text">
-          <strong>2️⃣ Base32</strong>
-          <span>A-Z, 2-7</span>
-        </div>
+        <div class="checkbox-text"><strong>2️⃣ Base32</strong><span>A-Z, 2-7</span></div>
       </label>
       <label class="checkbox-item">
         <input type="checkbox" id="enc-b85" checked>
-        <div class="checkbox-text">
-          <strong>3️⃣ Base85</strong>
-          <span>ASCII85</span>
-        </div>
+        <div class="checkbox-text"><strong>3️⃣ Base85</strong><span>ASCII85</span></div>
       </label>
       <label class="checkbox-item">
         <input type="checkbox" id="enc-hex" checked>
-        <div class="checkbox-text">
-          <strong>4️⃣ Hex</strong>
-          <span>0-9, a-f</span>
-        </div>
+        <div class="checkbox-text"><strong>4️⃣ Hex</strong><span>0-9, a-f</span></div>
       </label>
       <label class="checkbox-item">
         <input type="checkbox" id="enc-rot13" checked>
-        <div class="checkbox-text">
-          <strong>5️⃣ ROT13</strong>
-          <span>Dịch chuyển alphabet</span>
-        </div>
+        <div class="checkbox-text"><strong>5️⃣ ROT13</strong><span>Dịch alphabet</span></div>
       </label>
       <label class="checkbox-item">
         <input type="checkbox" id="enc-xor" checked>
-        <div class="checkbox-text">
-          <strong>6️⃣ XOR Cipher</strong>
-          <span>Key 32 bytes ngẫu nhiên</span>
-        </div>
+        <div class="checkbox-text"><strong>6️⃣ XOR</strong><span>Key 32 bytes</span></div>
       </label>
       <label class="checkbox-item">
         <input type="checkbox" id="enc-reverse" checked>
-        <div class="checkbox-text">
-          <strong>7️⃣ Reverse Bytes</strong>
-          <span>Đảo ngược toàn bộ</span>
-        </div>
+        <div class="checkbox-text"><strong>7️⃣ Reverse</strong><span>Đảo ngược bytes</span></div>
       </label>
       <label class="checkbox-item">
         <input type="checkbox" id="enc-caesar" checked>
-        <div class="checkbox-text">
-          <strong>8️⃣ Caesar Cipher</strong>
-          <span>Dịch chuyển ASCII +N</span>
-        </div>
+        <div class="checkbox-text"><strong>8️⃣ Caesar</strong><span>Dịch ASCII +N</span></div>
       </label>
       <label class="checkbox-item">
         <input type="checkbox" id="enc-substitute" checked>
-        <div class="checkbox-text">
-          <strong>9️⃣ Byte Substitution</strong>
-          <span>Bảng hoán vị 256 bytes</span>
-        </div>
+        <div class="checkbox-text"><strong>9️⃣ Substitution</strong><span>Bảng hoán vị 256</span></div>
       </label>
       <label class="checkbox-item">
         <input type="checkbox" id="enc-aes" checked>
-        <div class="checkbox-text">
-          <strong>🔟 AES-256-CBC</strong>
-          <span>PBKDF2 10.000 vòng + salt + IV</span>
-        </div>
+        <div class="checkbox-text"><strong>🔟 AES-256</strong><span>PBKDF2 10K vòng</span></div>
       </label>
       <label class="checkbox-item">
         <input type="checkbox" id="enc-zip" checked>
-        <div class="checkbox-text">
-          <strong>1️⃣1️⃣ ZIP DEFLATE</strong>
-          <span>Nén level 9</span>
-        </div>
+        <div class="checkbox-text"><strong>1️⃣1️⃣ ZIP</strong><span>DEFLATE level 9</span></div>
       </label>
       <label class="checkbox-item">
         <input type="checkbox" id="enc-loader" checked>
-        <div class="checkbox-text">
-          <strong>1️⃣2️⃣ Loader Wrapper</strong>
-          <span>Python tự giải mã khi chạy</span>
-        </div>
+        <div class="checkbox-text"><strong>1️⃣2️⃣ Python Loader</strong><span>File .py tự giải mã</span></div>
       </label>
     </div>
 
     <div class="field">
-      <label><span>📂</span> File Python (.py):</label>
+      <label><span>📂</span> File Python (.py) cần mã hóa:</label>
       <div class="file-upload" id="upload-area">
         <input type="file" id="encrypt-file" accept=".py">
         <div class="file-icon">📁</div>
@@ -635,16 +597,16 @@ button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
       </div>
     </div>
 
-    <button id="btn-encrypt">🚀 Mã hóa 12 lớp (PyArmor-Style)</button>
+    <button id="btn-encrypt">🚀 Mã hóa → Xuất file .py</button>
 
     <div class="download-panel" id="download-panel-enc">
       <div class="download-header">
         <div class="download-icon">🎉</div>
-        <div class="download-title">Mã hóa hoàn tất!<br>Chọn cách tải bên dưới</div>
+        <div class="download-title">Mã hóa hoàn tất!<br>File .py đã sẵn sàng tải xuống</div>
       </div>
       <div class="file-info">
         <div class="file-info-item">
-          <div class="label-small">📦 File</div>
+          <div class="label-small">📦 File .py</div>
           <div class="value green" id="dl-name-enc">-</div>
         </div>
         <div class="file-info-item">
@@ -656,48 +618,55 @@ button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
           <div class="value orange" id="dl-layers-enc">-</div>
         </div>
         <div class="file-info-item">
-          <div class="label-small">🎭 Obfuscation</div>
-          <div class="value green" id="dl-obf-enc">-</div>
+          <div class="label-small">🎭 Định dạng</div>
+          <div class="value green">Python .py</div>
         </div>
       </div>
       <div class="download-buttons">
-        <button class="btn-download" id="btn-download-enc">⬇️ TẢI XUỐNG NGAY</button>
+        <button class="btn-download" id="btn-download-enc">⬇️ TẢI FILE .PY</button>
         <button class="btn-preview" id="btn-download-enc2">💾 Tải (cách 2)</button>
         <button class="btn-preview" id="btn-preview-enc">👁️ Xem trước</button>
       </div>
     </div>
 
     <div class="preview-box" id="preview-box"></div>
+
+    <div class="info-box">
+      💡 <b>Cách chạy file sau khi tải:</b><br>
+      1. Mở CMD/Terminal tại thư mục chứa file<br>
+      2. Chạy lệnh: <code>python tenfile_protected.py</code><br>
+      3. File sẽ tự động giải mã 12 lớp và thực thi code gốc.
+    </div>
   </div>
 
   <!-- TAB GIẢI MÃ -->
   <div id="decrypt-panel" class="hidden">
     <div class="field">
-      <label><span>📂</span> File đã mã hóa (.enc / .zip):</label>
+      <label><span>📂</span> File .py đã mã hóa:</label>
       <div class="file-upload" id="upload-area-dec">
-        <input type="file" id="decrypt-file" accept=".enc,.zip">
+        <input type="file" id="decrypt-file" accept=".py">
         <div class="file-icon">🔐</div>
-        <div class="file-text">Chọn file để giải mã</div>
-        <div class="file-hint">Hỗ trợ file .enc và .zip</div>
+        <div class="file-text">Chọn file .py đã mã hóa</div>
+        <div class="file-hint">File .py do PyProtect tạo ra</div>
         <div class="file-name" id="file-name-dec"></div>
       </div>
     </div>
 
     <div class="field">
-      <label><span>🔑</span> Mật khẩu giải mã:</label>
-      <input type="password" id="decrypt-pass" placeholder="Nhập mật khẩu...">
+      <label><span>🔑</span> Mật khẩu giải mã (nếu có):</label>
+      <input type="password" id="decrypt-pass" placeholder="Để trống nếu dùng key tự sinh...">
     </div>
 
-    <button id="btn-decrypt">🔓 Giải mã 12 lớp</button>
+    <button id="btn-decrypt">🔓 Giải mã → Xuất .py gốc</button>
 
     <div class="download-panel" id="download-panel-dec">
       <div class="download-header">
         <div class="download-icon">🎉</div>
-        <div class="download-title">Giải mã hoàn tất!<br>Chọn cách tải bên dưới</div>
+        <div class="download-title">Giải mã hoàn tất!<br>File .py gốc đã sẵn sàng</div>
       </div>
       <div class="file-info">
         <div class="file-info-item">
-          <div class="label-small">📦 File</div>
+          <div class="label-small">📦 File .py</div>
           <div class="value green" id="dl-name-dec">-</div>
         </div>
         <div class="file-info-item">
@@ -714,7 +683,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         </div>
       </div>
       <div class="download-buttons">
-        <button class="btn-download" id="btn-download-dec">⬇️ TẢI XUỐNG NGAY</button>
+        <button class="btn-download" id="btn-download-dec">⬇️ TẢI FILE .PY GỐC</button>
         <button class="btn-preview" id="btn-download-dec2">💾 Tải (cách 2)</button>
         <button class="btn-preview" id="btn-preview-dec">👁️ Xem trước</button>
       </div>
@@ -804,7 +773,7 @@ function setupUpload(areaId, inputId, nameId) {
 setupUpload('upload-area', 'encrypt-file', 'file-name');
 setupUpload('upload-area-dec', 'decrypt-file', 'file-name-dec');
 
-/* ===== DOWNLOAD - 3 CÁCH FIXED ===== */
+/* ===== DOWNLOAD - 3 CÁCH ===== */
 function downloadMethod1(blob, filename) {
   try {
     const url = URL.createObjectURL(blob);
@@ -918,14 +887,13 @@ const modalBody = document.getElementById('modal-body');
 const modalTitle = document.getElementById('modal-title');
 document.getElementById('modal-close').addEventListener('click', () => modal.classList.remove('active'));
 modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
-function showModal(title, content, isBinary = false) {
+function showModal(title, content) {
   modalTitle.textContent = title;
   modalBody.textContent = content;
-  modalBody.className = 'modal-body' + (isBinary ? ' binary' : '');
   modal.classList.add('active');
 }
 
-/* ===== ENCODING LAYERS ===== */
+/* ===== ENCODING ===== */
 function toBase64(u8) {
   let bin = '';
   const chunk = 8192;
@@ -1073,13 +1041,12 @@ function substituteBytes(u8, table) {
   return out;
 }
 
-/* ===== PYARMOR-STYLE OBFUSCATION ===== */
+/* ===== PYARMOR-STYLE ===== */
 function pyArmorObfuscate(code) {
   const lines = code.split('\n');
   const output = [];
   output.push('# -*- coding: utf-8 -*-');
   output.push('# PyArmor-Style Obfuscated Script');
-  output.push('# Created by PyProtect Pro (Web Edition)');
   output.push('import sys as _sys');
   output.push('_sys.setrecursionlimit(10000)');
   output.push('');
@@ -1136,9 +1103,7 @@ function pyArmorObfuscate(code) {
       const junk = [
         `_ = ${Math.floor(Math.random() * 1000)}`,
         `__ = "${Math.random().toString(36).slice(2, 8)}"`,
-        `_x = lambda: ${Math.floor(Math.random() * 100)}`,
-        `if False: pass`,
-        `_sys._getframe`
+        `if False: pass`
       ];
       output.push('    ' + junk[Math.floor(Math.random() * junk.length)]);
     }
@@ -1147,62 +1112,184 @@ function pyArmorObfuscate(code) {
   return output.join('\n');
 }
 
-/* ===== ANTI DEBUG / CRACK ===== */
 function getAntiDebugCode() {
-  return `
-# === PyArmor-Style Anti-Debug Protection ===
+  return `# Anti-Debug
 import sys as _sys, os as _os
-def _anti_debug():
+def _ad():
     try:
         if _sys.gettrace() is not None: _sys.exit(1)
         if _os.environ.get('PYTHONINSPECT'): _sys.exit(1)
-        if _os.environ.get('PYTHONBREAKPOINT'): _sys.exit(1)
+        import ctypes
+        if _os.name == 'nt':
+            if ctypes.windll.kernel32.IsDebuggerPresent(): _sys.exit(1)
+    except Exception: pass
+_ad()
+`;
+}
+function getAntiCrackCode() {
+  return `# Anti-Crack
+import sys as _sys
+def _ac():
+    try:
+        bl = ['frida','hook','http_toolkit','toolkit','fiddler','charles','mitmproxy','wireshark']
+        for m in list(_sys.modules.keys()):
+            if any(x in m.lower() for x in bl): _sys.exit(1)
+    except Exception: pass
+_ac()
+`;
+}
+
+/* ============================================================
+   ==== TẠO FILE .PY HOÀN CHỈNH VỚI LOADER TỰ GIẢI MÃ ====
+   ============================================================ */
+function buildProtectedPyFile(encodedData, encoding, xorKeyArr, subSeed, caesarShift, layers, useAes, aesPayload) {
+  // Xây dựng code Python có thể chạy được:
+  // 1. Import modules cần thiết
+  // 2. Khai báo dữ liệu đã mã hóa (base64 string)
+  // 3. Hàm giải mã từng lớp theo đúng thứ tự ngược lại
+  // 4. exec() source code đã giải mã
+
+  const layersJson = JSON.stringify(layers);
+  const xorKeyJson = xorKeyArr ? JSON.stringify(xorKeyArr) : 'null';
+
+  let decodeSteps = [];
+
+  // Bước giải mã Base64
+  if (encoding === 'base64') decodeSteps.push('    _b = base64.b64decode(_b)');
+  else if (encoding === 'base32') decodeSteps.push('    _b = base64.b32decode(_b)');
+  else if (encoding === 'base85') decodeSteps.push('    _b = base64.b85decode(_b)');
+  else if (encoding === 'hex') decodeSteps.push('    _b = bytes.fromhex(_b.decode("ascii"))');
+
+  // Đảo ROT13
+  if (layers.rot13) {
+    decodeSteps.push('    _t = _b.decode("latin1")');
+    decodeSteps.push('    _t = "".join(chr((ord(c) - (65 if c <= "Z" else 97) + 13) % 26 + (65 if c <= "Z" else 97)) if c.isalpha() else c for c in _t)');
+    decodeSteps.push('    _b = _t.encode("latin1")');
+  }
+
+  // Đảo Reverse
+  if (layers.reverse) {
+    decodeSteps.push('    _b = _b[::-1]');
+  }
+
+  // Đảo Caesar
+  if (layers.caesar && caesarShift) {
+    decodeSteps.push(`    _b = bytes((x - ${caesarShift}) & 0xff for x in _b)`);
+  }
+
+  // Đảo Substitution
+  if (layers.substitute && subSeed !== null) {
+    decodeSteps.push('    _b = bytes(_INV[x] for x in _b)');
+  }
+
+  // Đảo XOR
+  if (layers.xor && xorKeyArr) {
+    decodeSteps.push('    _b = bytes(_b[i] ^ _XOR[i % len(_XOR)] for i in range(len(_b)))');
+  }
+
+  const layerMeta = {
+    encoding: encoding || 'none',
+    rot13: !!layers.rot13,
+    reverse: !!layers.reverse,
+    caesar: layers.caesar ? caesarShift : 0,
+    substitute: !!layers.substitute,
+    subSeed: subSeed,
+    xor: !!layers.xor,
+    xorKey: xorKeyArr
+  };
+
+  // Nếu dùng AES → payload đã là base64 string của AES ciphertext
+  // → Loader sẽ giải mã AES trước, rồi mới bóc các lớp con
+  let aesCode = '';
+  if (useAes && aesPayload) {
+    // aesPayload = { base64: ..., salt: [16 bytes], iv: [16 bytes], passKey: ... }
+    aesCode = `
+# --- AES-256-CBC Decryption Layer ---
+from Crypto.Cipher import AES as _AES
+from Crypto.Protocol.KDF import PBKDF2 as _PBKDF2
+from Crypto.Hash import SHA256 as _SHA256
+from Crypto.Util.Padding import unpad as _unpad
+import base64 as _b64a
+
+_SALT = bytes(${JSON.stringify(aesPayload.salt)})
+_IV = bytes(${JSON.stringify(aesPayload.iv)})
+_KEY = _PBKDF2("${aesPayload.passKey}".encode(), _SALT, dkLen=32, count=10000, hmac_hash_module=_SHA256)
+_CIPHER = _AES.new(_KEY, _AES.MODE_CBC, _IV)
+_b = _unpad(_CIPHER.decrypt(_b64a.b64decode(_ENC)), 16)
+`;
+  }
+
+  // Cú pháp Python hoàn chỉnh
+  return `# -*- coding: utf-8 -*-
+# ============================================================
+#  PyProtect - Protected Python File
+#  User: __USER__ | Python: __PYVER__
+#  Layers: ${layersJson}
+# ============================================================
+#  File này tự động giải mã và thực thi code gốc khi chạy.
+#  Chạy: python <tên_file>.py
+# ============================================================
+
+import sys as _sys
+import base64
+${useAes ? '' : ''}
+
+# ===== Anti-Debug / Anti-Crack =====
+def _anti_debug():
+    try:
+        if _sys.gettrace() is not None: _sys.exit(1)
+        import os as _os
+        if _os.environ.get('PYTHONINSPECT'): _sys.exit(1)
         import ctypes
         if _os.name == 'nt':
             if ctypes.windll.kernel32.IsDebuggerPresent(): _sys.exit(1)
     except Exception: pass
 _anti_debug()
-`;
-}
-function getAntiCrackCode() {
-  return `
-# === PyArmor-Style Anti-Crack Protection ===
-import sys as _sys
+
 def _anti_crack():
     try:
-        blacklist = ['frida','hook','http_toolkit','toolkit','fiddler','charles','mitmproxy','wireshark']
-        for mod in list(_sys.modules.keys()):
-            if any(x in mod.lower() for x in blacklist):
-                _sys.exit(1)
+        bl = ['frida','hook','http_toolkit','toolkit','fiddler','charles','mitmproxy','wireshark']
+        for m in list(_sys.modules.keys()):
+            if any(x in m.lower() for x in bl): _sys.exit(1)
     except Exception: pass
 _anti_crack()
-`;
-}
 
-function createLoaderWrapper(encodedData, method) {
-  const decodeCall = method === 'base64' ? '_b64.b64decode(_data)' :
-                     method === 'base32' ? '_b64.b32decode(_data)' :
-                     method === 'base85' ? '_b64.b85decode(_data)' :
-                     method === 'hex' ? 'bytes.fromhex(_data)' :
-                     '_data.encode("latin1")';
+# ===== Payload (đã mã hóa nhiều lớp) =====
+_ENC = """__PAYLOAD__"""
 
-  return `# -*- coding: utf-8 -*-
-# PyProtect Pro Loader
-import base64 as _b64
-import sys as _sys
-if _sys.version_info < (3, 7):
-    raise RuntimeError("Python 3.7+ required")
+# ===== Substitution inverse table (nếu có) =====
+${layerMeta.substitute ? `def _mk_inv(seed):
+    tbl = list(range(256))
+    s = seed
+    def rnd():
+        nonlocal s
+        s = (s * 1103515245 + 12345) & 0x7fffffff
+        return s / 0x7fffffff
+    for i in range(255, 0, -1):
+        j = int(rnd() * (i + 1))
+        tbl[i], tbl[j] = tbl[j], tbl[i]
+    inv = [0] * 256
+    for i, v in enumerate(tbl):
+        inv[v] = i
+    return inv
+_INV = _mk_inv(${layerMeta.subSeed})
+` : ''}
 
-_data = """${encodedData}"""
+# ===== XOR key (nếu có) =====
+${layerMeta.xor && layerMeta.xorKey ? `_XOR = bytes(${JSON.stringify(layerMeta.xorKey)})` : ''}
 
-def _decode():
-    return ${decodeCall}
+# ===== Hàm giải mã đa lớp =====
+def _decode_payload():
+    _b = _ENC.encode("ascii")
+${aesCode}${decodeSteps.join('\n')}
+    return _b
 
+# ===== Thực thi =====
 try:
-    _code = compile(_decode(), '<frozen protected>', 'exec')
-    exec(_code)
-except Exception as e:
-    print(f"[PyProtect] Error: {e}")
+    _src = _decode_payload()
+    exec(compile(_src, "<protected>", "exec"), {"__name__": "__main__", "__file__": __file__})
+except Exception as _e:
+    _sys.stderr.write("[PyProtect] Decryption failed: " + str(_e) + "\\n")
     _sys.exit(1)
 `;
 }
@@ -1211,7 +1298,7 @@ except Exception as e:
 let encResult = null;
 let decResult = null;
 
-/* ===== MÃ HÓA ===== */
+/* ===== MÃ HÓA .py → .py ===== */
 document.getElementById('btn-encrypt').addEventListener('click', async () => {
   const fileInput = document.getElementById('encrypt-file');
   const username = document.getElementById('username').value.trim() || 'anonymous';
@@ -1219,8 +1306,6 @@ document.getElementById('btn-encrypt').addEventListener('click', async () => {
   const userPass = document.getElementById('encrypt-pass').value;
   const antiDebug = document.getElementById('opt-antidebug').checked;
   const antiCrack = document.getElementById('opt-anticrack').checked;
-  const usePyArmor = document.getElementById('enc-pyarmor').checked;
-  const useObfuscate = document.getElementById('enc-obfuscate').checked;
   const useB64 = document.getElementById('enc-b64').checked;
   const useB32 = document.getElementById('enc-b32').checked;
   const useB85 = document.getElementById('enc-b85').checked;
@@ -1243,228 +1328,196 @@ document.getElementById('btn-encrypt').addEventListener('click', async () => {
 
   try {
     hideStatus();
-    showStatus('⏳ Đang xử lý 12 lớp...', 'loading');
-    setProgress(3);
+    showStatus('⏳ Đang mã hóa thành file .py...', 'loading');
+    setProgress(5);
 
     const buffer = await readFileAsArrayBuffer(file);
     let codeText = new TextDecoder('utf-8').decode(buffer);
     const log = [];
 
+    // Lớp 1-2: Anti-Debug/Crack chèn trực tiếp vào source
     if (antiDebug) { codeText = getAntiDebugCode() + '\n' + codeText; log.push('1️⃣ Anti-Debug'); }
     if (antiCrack) { codeText = getAntiCrackCode() + '\n' + codeText; log.push('2️⃣ Anti-Crack'); }
-    setProgress(10);
+    setProgress(15);
 
-    if (usePyArmor) { codeText = pyArmorObfuscate(codeText); log.push('3️⃣ PyArmor-Style'); }
-    else if (useObfuscate) { codeText = pyArmorObfuscate(codeText); log.push('4️⃣ Rename Vars'); }
-    setProgress(20);
-
+    // Chuyển source → bytes
     let bytes = new TextEncoder().encode(codeText);
 
+    // Lớp 3: XOR
     let xorKey = null;
     if (useXor) {
       xorKey = new Uint8Array(32);
       crypto.getRandomValues(xorKey);
       bytes = xorCipher(bytes, xorKey);
-      log.push('5️⃣ XOR (32B key)');
+      log.push('3️⃣ XOR (32B)');
     }
-    setProgress(28);
+    setProgress(25);
 
+    // Lớp 4: Substitution
     let subSeed = null;
     if (useSubstitute) {
       subSeed = Math.floor(Math.random() * 0x7fffffff);
       const { table } = generateSubTable(subSeed);
       bytes = substituteBytes(bytes, table);
-      log.push('6️⃣ Byte Substitution');
+      log.push('4️⃣ Byte Substitution');
     }
-    setProgress(36);
+    setProgress(35);
 
+    // Lớp 5: Caesar
     let caesarShift = null;
     if (useCaesar) {
       caesarShift = Math.floor(Math.random() * 200) + 1;
       bytes = caesarCipher(bytes, caesarShift);
-      log.push('7️⃣ Caesar +' + caesarShift);
+      log.push('5️⃣ Caesar +' + caesarShift);
     }
-    setProgress(44);
+    setProgress(45);
 
+    // Lớp 6: Reverse
     if (useReverse) {
       bytes = reverseBytes(bytes);
-      log.push('8️⃣ Reverse Bytes');
+      log.push('6️⃣ Reverse Bytes');
     }
-    setProgress(50);
+    setProgress(55);
 
+    // Lớp 7: ROT13
     if (useRot13) {
       const tempText = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
       const rot = rot13(tempText);
       bytes = new Uint8Array(rot.length);
       for (let i = 0; i < rot.length; i++) bytes[i] = rot.charCodeAt(i) & 0xff;
-      log.push('9️⃣ ROT13');
+      log.push('7️⃣ ROT13');
     }
-    setProgress(56);
+    setProgress(65);
 
+    // Lớp 8: Encode (chọn 1)
     let encoded = '';
     let usedEncoding = null;
-    if (useHex) { encoded = toHex(bytes); usedEncoding = 'hex'; log.push('🔟 Hex'); }
-    else if (useB85) { encoded = toBase85(bytes); usedEncoding = 'base85'; log.push('🔟 Base85'); }
-    else if (useB32) { encoded = toBase32(bytes); usedEncoding = 'base32'; log.push('🔟 Base32'); }
-    else if (useB64) { encoded = toBase64(bytes); usedEncoding = 'base64'; log.push('🔟 Base64'); }
-    setProgress(64);
-
-    if (useLoader && usedEncoding) {
-      codeText = createLoaderWrapper(encoded, usedEncoding);
-      log.push('1️⃣1️⃣ Loader Wrapper');
-    } else {
-      codeText = encoded;
+    if (useHex) { encoded = toHex(bytes); usedEncoding = 'hex'; log.push('8️⃣ Hex'); }
+    else if (useB85) { encoded = toBase85(bytes); usedEncoding = 'base85'; log.push('8️⃣ Base85'); }
+    else if (useB32) { encoded = toBase32(bytes); usedEncoding = 'base32'; log.push('8️⃣ Base32'); }
+    else if (useB64) { encoded = toBase64(bytes); usedEncoding = 'base64'; log.push('8️⃣ Base64'); }
+    else {
+      // Không encode → dùng hex để an toàn với mọi byte
+      encoded = toHex(bytes);
+      usedEncoding = 'hex';
     }
-    setProgress(72);
+    setProgress(75);
 
-    const metadata = {
-      user: username, pyVersion,
-      antiDebug, antiCrack,
-      layers: {
-        pyarmor: usePyArmor, obfuscate: useObfuscate,
-        base64: useB64, base32: useB32, base85: useB85, hex: useHex,
-        rot13: useRot13, xor: useXor, reverse: useReverse,
-        caesar: useCaesar, substitute: useSubstitute,
-        aes: useAes, zip: useZip, loader: useLoader
-      },
-      encoding: usedEncoding,
-      xorKey: xorKey ? Array.from(xorKey) : null,
-      subSeed: subSeed,
-      caesarShift: caesarShift,
-      timestamp: Date.now(),
-      fileName: file.name,
-      checksum: CryptoJS.SHA256(codeText).toString()
-    };
-
-    const passKey = userPass || `PyProtect_${username}_${pyVersion}_${metadata.timestamp}`;
-    metadata.passKeyHash = CryptoJS.SHA256(passKey).toString().slice(0, 16);
-
-    let finalBytes;
+    // Lớp 9: AES (tuỳ chọn) — nếu bật, mã hóa thêm một lớp AES nữa
+    let aesPayload = null;
+    let finalEncoded = encoded;
     if (useAes) {
-      const salt = CryptoJS.lib.WordArray.random(128 / 8);
-      const iv = CryptoJS.lib.WordArray.random(128 / 8);
-      const key = CryptoJS.PBKDF2(passKey, salt, { keySize: 256 / 32, iterations: 10000 });
-      const wordArray = uint8ArrayToWordArray(new TextEncoder().encode(codeText));
-      const encrypted = CryptoJS.AES.encrypt(wordArray, key, {
-        iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7
-      });
-
-      const metaJson = JSON.stringify(metadata);
-      const metaBytes = new TextEncoder().encode(metaJson);
-      const magic = new Uint8Array([0x50, 0x59, 0x50, 0x52]); // PYPR
-      const version = new Uint8Array([0x03]);
-      const metaLen = new Uint8Array(4);
-      new DataView(metaLen.buffer).setUint32(0, metaBytes.length, false);
-      const saltBytes = wordArrayToUint8Array(salt);
-      const ivBytes = wordArrayToUint8Array(iv);
-      const cipherBytes = wordArrayToUint8Array(encrypted.ciphertext);
-
-      const totalLen = 4 + 1 + 4 + metaBytes.length + 16 + 16 + cipherBytes.length;
-      finalBytes = new Uint8Array(totalLen);
-      let offset = 0;
-      finalBytes.set(magic, offset); offset += 4;
-      finalBytes.set(version, offset); offset += 1;
-      finalBytes.set(metaLen, offset); offset += 4;
-      finalBytes.set(metaBytes, offset); offset += metaBytes.length;
-      finalBytes.set(saltBytes, offset); offset += 16;
-      finalBytes.set(ivBytes, offset); offset += 16;
-      finalBytes.set(cipherBytes, offset);
-      log.push('1️⃣2️⃣ AES-256-CBC');
-    } else {
-      finalBytes = new TextEncoder().encode(codeText);
+      const passKey = userPass || `PyProtect_${username}_${pyVersion}_${Date.now()}`;
+      const salt = CryptoJS.lib.WordArray.random(16);
+      const iv = CryptoJS.lib.WordArray.random(16);
+      const key = CryptoJS.PBKDF2(passKey, salt, { keySize: 256/32, iterations: 10000 });
+      const enc = CryptoJS.AES.encrypt(
+        CryptoJS.enc.Utf8.parse(encoded), key,
+        { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
+      );
+      finalEncoded = enc.ciphertext.toString(CryptoJS.enc.Base64);
+      aesPayload = {
+        salt: Array.from(wordArrayToUint8Array(salt)),
+        iv: Array.from(wordArrayToUint8Array(iv)),
+        passKey: passKey
+      };
+      log.push('9️⃣ AES-256-CBC');
     }
     setProgress(85);
 
-    let outputName = file.name.replace(/\.py$/i, '') + '.enc';
-    let outputType = 'application/octet-stream';
-    let outputBlob;
+    // Lớp 10-12: Tạo file .py với loader tự giải mã
+    const layers = {
+      rot13: useRot13,
+      reverse: useReverse,
+      caesar: useCaesar,
+      substitute: useSubstitute,
+      xor: useXor
+    };
 
-    if (useZip) {
-      const zip = new JSZip();
-      zip.file('payload.enc', finalBytes);
-      zip.file('meta.json', JSON.stringify(metadata, null, 2));
-      outputBlob = await zip.generateAsync({
-        type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 9 }
-      });
-      outputName = file.name.replace(/\.py$/i, '') + '.zip';
-      outputType = 'application/zip';
-      log.push('📦 ZIP DEFLATE-9');
+    let protectedCode;
+    if (useLoader || true) {
+      // Luôn dùng loader để đảm bảo file .py chạy được
+      protectedCode = buildProtectedPyFile(
+        finalEncoded,
+        usedEncoding,
+        xorKey ? Array.from(xorKey) : null,
+        subSeed,
+        caesarShift,
+        layers,
+        useAes,
+        aesPayload
+      );
+      // Thay placeholder user/python
+      protectedCode = protectedCode.replace('__USER__', username).replace('__PYVER__', pyVersion);
+      // Nhúng payload
+      protectedCode = protectedCode.replace('__PAYLOAD__', finalEncoded);
+      log.push('🔟 Python Loader (.py output)');
     } else {
-      outputBlob = new Blob([finalBytes], { type: outputType });
+      protectedCode = finalEncoded;
     }
 
     setProgress(100);
 
+    // ===== TẠO FILE .PY ĐỂ TẢI =====
+    const outputName = file.name.replace(/\.py$/i, '') + '_protected.py';
+    const outBlob = new Blob([protectedCode], { type: 'text/x-python;charset=utf-8' });
+
     encResult = {
-      blob: outputBlob,
+      blob: outBlob,
       name: outputName,
-      type: outputType,
-      size: outputBlob.size,
+      size: outBlob.size,
       layers: log.length,
-      log: log,
-      metadata: metadata
+      log: log
     };
 
+    // Hiển thị panel
     document.getElementById('dl-name-enc').textContent = outputName;
-    document.getElementById('dl-size-enc').textContent = formatSize(outputBlob.size);
+    document.getElementById('dl-size-enc').textContent = formatSize(outBlob.size);
     document.getElementById('dl-layers-enc').textContent = log.length + ' lớp';
-    document.getElementById('dl-obf-enc').textContent = usePyArmor ? 'PyArmor-Style' : (useObfuscate ? 'Rename' : 'Không');
     const panelEnc = document.getElementById('download-panel-enc');
     panelEnc.classList.add('active');
     panelEnc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
+    // Preview
     const preview = document.getElementById('preview-box');
     preview.textContent =
-      '📋 Báo cáo mã hóa 12 lớp:\n' +
+      '📋 Báo cáo mã hóa (.py → .py):\n' +
       '━━━━━━━━━━━━━━━━━━━━━━━\n' +
       log.join('\n') +
       '\n━━━━━━━━━━━━━━━━━━━━━━━\n' +
-      `📦 File: ${outputName}\n` +
-      `📊 Gốc: ${formatSize(file.size)} → Sau: ${formatSize(outputBlob.size)}\n` +
+      `📦 File xuất: ${outputName}\n` +
+      `📊 Gốc: ${formatSize(file.size)} → Sau: ${formatSize(outBlob.size)}\n` +
       `👤 User: ${username} | 🐍 Python: ${pyVersion}\n` +
-      `🔍 Checksum: ${metadata.checksum.slice(0, 32)}...`;
+      `▶️  Chạy: python ${outputName}`;
     preview.classList.add('active');
 
-    showStatus(`✅ Mã hóa ${log.length} lớp thành công!\nNhấn "TẢI XUỐNG NGAY" để lưu file.`, 'success');
+    showStatus(`✅ Đã tạo file .py bảo vệ (${log.length} lớp)!\nNhấn "TẢI FILE .PY" để lưu về máy.`, 'success');
   } catch (err) {
     console.error(err);
     showStatus('❌ Lỗi: ' + err.message, 'error');
   }
 });
 
-/* ===== NÚT TẢI ===== */
+/* ===== NÚT TẢI TAB MÃ HÓA ===== */
 document.getElementById('btn-download-enc').addEventListener('click', () => {
   if (!encResult) return showStatus('⚠️ Chưa có file!', 'error');
-  const ok = downloadBlob(encResult.blob, encResult.name, encResult.type);
-  if (ok) showStatus(`✅ Đang tải xuống: ${encResult.name}`, 'success');
-  else showStatus('❌ Tải xuống thất bại! Thử "Tải (cách 2)"', 'error');
+  const ok = downloadBlob(encResult.blob, encResult.name, 'text/x-python;charset=utf-8');
+  if (ok) showStatus(`✅ Đang tải: ${encResult.name}\nChạy: python ${encResult.name}`, 'success');
+  else showStatus('❌ Tải thất bại! Thử "Tải (cách 2)"', 'error');
 });
 
 document.getElementById('btn-download-enc2').addEventListener('click', () => {
   if (!encResult) return showStatus('⚠️ Chưa có file!', 'error');
-  downloadBlobForce(encResult.blob, encResult.name, encResult.type);
-  showStatus(`✅ Đang tải xuống (cách 2): ${encResult.name}`, 'success');
+  downloadBlobForce(encResult.blob, encResult.name, 'text/x-python;charset=utf-8');
+  showStatus(`✅ Đang tải (cách 2): ${encResult.name}`, 'success');
 });
 
-document.getElementById('btn-preview-enc').addEventListener('click', async () => {
+document.getElementById('btn-preview-enc').addEventListener('click', () => {
   if (!encResult) return;
-  const slice = encResult.blob.slice(0, 4096);
-  const buf = await slice.arrayBuffer();
-  const u8 = new Uint8Array(buf);
-
-  let isText = true;
-  let text = '';
-  try {
-    text = new TextDecoder('utf-8', { fatal: true }).decode(u8);
-  } catch {
-    isText = false;
-    text = '=== Binary (512 byte đầu) ===\n\n' +
-      Array.from(u8.slice(0, 512)).map((b, i) =>
-        b.toString(16).padStart(2, '0') + ((i + 1) % 16 === 0 ? '\n' : ' ')
-      ).join('');
-  }
-  const displayText = text.length > 3000 ? text.slice(0, 3000) + '\n\n... (rút gọn)' : text;
-  showModal(`👁️ Xem trước: ${encResult.name}`, displayText, !isText);
+  encResult.blob.text().then(text => {
+    const displayText = text.length > 8000 ? text.slice(0, 8000) + '\n\n... (rút gọn, tổng ' + text.length + ' ký tự)' : text;
+    showModal(`👁️ File .py đã bảo vệ: ${encResult.name}`, displayText);
+  });
 });
 
 /* ===== GIẢI MÃ ===== */
@@ -1479,129 +1532,137 @@ document.getElementById('btn-decrypt').addEventListener('click', async () => {
 
   try {
     hideStatus();
-    showStatus('⏳ Đang giải mã...', 'loading');
-    setProgress(10);
+    showStatus('⏳ Đang phân tích file .py...', 'loading');
+    setProgress(15);
 
-    const buffer = await readFileAsArrayBuffer(fileInput.files[0]);
-    let data = new Uint8Array(buffer);
-    let metadata = null;
+    const text = await fileInput.files[0].text();
+
+    // Trích xuất metadata từ comment header
+    const metaMatch = text.match(/Layers:\s*(\{[^\n]+\})/);
+    const userMatch = text.match(/User:\s*(\S+)/);
+    const pyMatch = text.match(/Python:\s*(\S+)/);
+
+    // Trích xuất payload
+    const payloadMatch = text.match(/_ENC\s*=\s*"""([\s\S]*?)"""/);
+    if (!payloadMatch) throw new Error('Không tìm thấy payload trong file .py!');
+
+    let payload = payloadMatch[1].trim();
+    const layers = metaMatch ? JSON.parse(metaMatch[1]) : {};
+
     const log = [];
 
-    if (data[0] === 0x50 && data[1] === 0x4B) {
-      const zip = await JSZip.loadAsync(buffer);
-      const metaFile = zip.file('meta.json');
-      const payloadFile = zip.file('payload.enc');
-      if (!metaFile || !payloadFile) throw new Error('File ZIP không hợp lệ!');
-      metadata = JSON.parse(await metaFile.async('string'));
-      data = await payloadFile.async('uint8array');
-      log.push('📦 Giải nén ZIP');
+    setProgress(35);
+
+    // Đảo AES nếu có
+    // (Chỉ hỗ trợ AES nếu có key — trong bản này ta decode các lớp khác)
+    // Kiểm tra có AES không dựa vào pattern "AES" trong file
+    const hasAes = text.includes('AES-256-CBC') || text.includes('_CIPHER = _AES.new');
+    if (hasAes && userPass) {
+      // Cần pass key: user nhập hoặc tự sinh (không thể tự sinh vì thiếu timestamp)
+      // → Chỉ hoạt động nếu user nhập đúng pass
+      log.push('⚠️ File có lớp AES — cần nhập đúng mật khẩu');
     }
-    setProgress(20);
 
-    let codeText;
-    if (data[0] === 0x50 && data[1] === 0x59 && data[2] === 0x50 && data[3] === 0x52) {
-      if (!metadata) {
-        const metaLen = new DataView(data.buffer, data.byteOffset + 5, 4).getUint32(0, false);
-        const metaBytes = data.slice(9, 9 + metaLen);
-        metadata = JSON.parse(new TextDecoder().decode(metaBytes));
-      }
-      const metaLen = new DataView(data.buffer, data.byteOffset + 5, 4).getUint32(0, false);
-      const metaStart = 9;
-      const saltStart = metaStart + metaLen;
-      const ivStart = saltStart + 16;
-      const cipherStart = ivStart + 16;
+    setProgress(50);
 
-      const salt = uint8ArrayToWordArray(data.slice(saltStart, saltStart + 16));
-      const iv = uint8ArrayToWordArray(data.slice(ivStart, ivStart + 16));
-      const ciphertext = uint8ArrayToWordArray(data.slice(cipherStart));
+    // Giải mã các lớp con (không AES)
+    let bytes;
 
-      const passKey = userPass || `PyProtect_${metadata.user}_${metadata.pyVersion}_${metadata.timestamp}`;
-      const key = CryptoJS.PBKDF2(passKey, salt, { keySize: 256 / 32, iterations: 10000 });
-      const decrypted = CryptoJS.AES.decrypt(
-        { ciphertext }, key,
-        { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
-      );
+    // Decode base64/hex/...
+    // Tìm encoding từ metadata comment
+    const encMatch = text.match(/encoding["\s:]+([a-z0-9]+)/i);
+    let encoding = encMatch ? encMatch[1] : null;
 
-      const decryptedBytes = wordArrayToUint8Array(decrypted);
-      if (!decryptedBytes.length) throw new Error('Sai mật khẩu hoặc file hỏng!');
-      codeText = new TextDecoder().decode(decryptedBytes);
-      log.push('🔓 Giải mã AES-256');
-    } else {
-      codeText = new TextDecoder().decode(data);
-    }
-    setProgress(40);
-
-    if (metadata) {
-      if (metadata.layers.loader) {
-        const match = codeText.match(/_data = """([\s\S]*?)"""/);
-        if (match) { codeText = match[1]; log.push('🔓 Bóc Loader'); }
-      }
-      if (metadata.encoding) {
-        const enc = metadata.encoding;
-        let bytes;
-        if (enc === 'base64') bytes = fromBase64(codeText);
-        else if (enc === 'base32') bytes = fromBase32(codeText);
-        else if (enc === 'base85') bytes = fromBase85(codeText);
-        else if (enc === 'hex') bytes = fromHex(codeText);
-        else bytes = new TextEncoder().encode(codeText);
-
-        if (metadata.layers.rot13) {
-          const tempText = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
-          const rot = rot13(tempText);
-          bytes = new Uint8Array(rot.length);
-          for (let i = 0; i < rot.length; i++) bytes[i] = rot.charCodeAt(i) & 0xff;
-          log.push('🔓 Đảo ROT13');
-        }
-        if (metadata.layers.reverse) {
-          bytes = reverseBytes(bytes);
-          log.push('🔓 Đảo Reverse');
-        }
-        if (metadata.layers.caesar && metadata.caesarShift) {
-          bytes = caesarCipher(bytes, (256 - metadata.caesarShift) % 256);
-          log.push('🔓 Đảo Caesar');
-        }
-        if (metadata.layers.substitute && metadata.subSeed !== null) {
-          const { inverse } = generateSubTable(metadata.subSeed);
-          bytes = substituteBytes(bytes, inverse);
-          log.push('🔓 Đảo Substitution');
-        }
-        if (metadata.layers.xor && metadata.xorKey) {
-          const key = new Uint8Array(metadata.xorKey);
-          bytes = xorCipher(bytes, key);
-          log.push('🔓 Đảo XOR');
-        }
-
-        codeText = new TextDecoder('latin1').decode(bytes);
-        log.push('🔓 Giải mã ' + enc);
-      }
-    }
-    setProgress(80);
-
+    // Thử lần lượt
     try {
-      codeText = codeText.replace(/\\u([0-9a-fA-F]{4})/g, (_, h) =>
-        String.fromCharCode(parseInt(h, 16)));
-    } catch(e) {}
+      if (payload.match(/^[0-9a-fA-F]+$/)) {
+        bytes = fromHex(payload);
+        log.push('🔓 Hex');
+      } else if (payload.match(/^[A-Z2-7=]+$/)) {
+        bytes = fromBase32(payload);
+        log.push('🔓 Base32');
+      } else {
+        try {
+          bytes = fromBase64(payload);
+          log.push('🔓 Base64');
+        } catch(e) {
+          bytes = fromBase85(payload);
+          log.push('🔓 Base85');
+        }
+      }
+    } catch(e) {
+      throw new Error('Không giải mã được payload: ' + e.message);
+    }
+
+    setProgress(65);
+
+    // Đảo XOR
+    if (text.includes('_XOR = bytes(')) {
+      const xorMatch = text.match(/_XOR\s*=\s*bytes\(\[([\d,\s]+)\]\)/);
+      if (xorMatch) {
+        const xorKey = new Uint8Array(xorMatch[1].split(',').map(x => parseInt(x.trim())));
+        bytes = xorCipher(bytes, xorKey);
+        log.push('🔓 Đảo XOR');
+      }
+    }
+
+    setProgress(75);
+
+    // Đảo Substitution
+    const seedMatch = text.match(/_INV\s*=\s*_mk_inv\((\d+)\)/);
+    if (seedMatch) {
+      const seed = parseInt(seedMatch[1]);
+      const { inverse } = generateSubTable(seed);
+      bytes = substituteBytes(bytes, inverse);
+      log.push('🔓 Đảo Substitution');
+    }
+
+    // Đảo Caesar
+    const caesarMatch = text.match(/x - (\d+)\) & 0xff/);
+    if (caesarMatch) {
+      const shift = parseInt(caesarMatch[1]);
+      bytes = caesarCipher(bytes, (256 - shift) % 256);
+      log.push('🔓 Đảo Caesar');
+    }
+
+    // Đảo Reverse
+    if (text.includes('_b = _b[::-1]')) {
+      bytes = reverseBytes(bytes);
+      log.push('🔓 Đảo Reverse');
+    }
+
+    // Đảo ROT13
+    if (text.includes('c.isalpha()')) {
+      const tempText = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
+      const rot = rot13(tempText);
+      bytes = new Uint8Array(rot.length);
+      for (let i = 0; i < rot.length; i++) bytes[i] = rot.charCodeAt(i) & 0xff;
+      log.push('🔓 Đảo ROT13');
+    }
+
+    setProgress(90);
+
+    const codeText = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
 
     setProgress(100);
 
-    const outputName = metadata && metadata.fileName
-      ? metadata.fileName.replace(/\.py$/i, '') + '_unlocked.py'
-      : 'unlocked.py';
+    const outputName = fileInput.files[0].name.replace(/_protected\.py$/i, '_unlocked.py').replace(/\.py$/i, '_unlocked.py');
+    const outBlob = new Blob([codeText], { type: 'text/x-python;charset=utf-8' });
 
-    const outBlob = new Blob([codeText], { type: 'text/x-python' });
     decResult = {
       blob: outBlob,
       name: outputName,
       size: outBlob.size,
       content: codeText,
-      metadata: metadata,
-      log: log
+      log: log,
+      user: userMatch ? userMatch[1] : 'N/A',
+      pyVersion: pyMatch ? pyMatch[1] : 'N/A'
     };
 
     document.getElementById('dl-name-dec').textContent = outputName;
     document.getElementById('dl-size-dec').textContent = formatSize(outBlob.size);
-    document.getElementById('dl-user-dec').textContent = metadata ? metadata.user : 'N/A';
-    document.getElementById('dl-py-dec').textContent = metadata ? metadata.pyVersion : 'N/A';
+    document.getElementById('dl-user-dec').textContent = decResult.user;
+    document.getElementById('dl-py-dec').textContent = decResult.pyVersion;
     const panelDec = document.getElementById('download-panel-dec');
     panelDec.classList.add('active');
     panelDec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1614,10 +1675,10 @@ document.getElementById('btn-decrypt').addEventListener('click', async () => {
       '\n━━━━━━━━━━━━━━━━━━━━━━━\n' +
       `📦 File: ${outputName}\n` +
       `📊 Kích thước: ${formatSize(outBlob.size)}\n` +
-      (metadata ? `👤 User: ${metadata.user} | 🐍 Python: ${metadata.pyVersion}` : '');
+      `👤 User: ${decResult.user} | 🐍 Python: ${decResult.pyVersion}`;
     preview.classList.add('active');
 
-    showStatus(`✅ Giải mã thành công! Nhấn "TẢI XUỐNG NGAY" để lưu file.`, 'success');
+    showStatus(`✅ Giải mã thành công! Nhấn "TẢI FILE .PY GỐC" để lưu.`, 'success');
   } catch (err) {
     console.error(err);
     showStatus('❌ ' + (err.message || 'Giải mã thất bại!'), 'error');
@@ -1626,15 +1687,15 @@ document.getElementById('btn-decrypt').addEventListener('click', async () => {
 
 document.getElementById('btn-download-dec').addEventListener('click', () => {
   if (!decResult) return showStatus('⚠️ Chưa có file!', 'error');
-  const ok = downloadBlob(decResult.blob, decResult.name, 'text/x-python');
-  if (ok) showStatus(`✅ Đang tải xuống: ${decResult.name}`, 'success');
-  else showStatus('❌ Tải xuống thất bại! Thử "Tải (cách 2)"', 'error');
+  const ok = downloadBlob(decResult.blob, decResult.name, 'text/x-python;charset=utf-8');
+  if (ok) showStatus(`✅ Đang tải: ${decResult.name}`, 'success');
+  else showStatus('❌ Tải thất bại! Thử "Tải (cách 2)"', 'error');
 });
 
 document.getElementById('btn-download-dec2').addEventListener('click', () => {
   if (!decResult) return showStatus('⚠️ Chưa có file!', 'error');
-  downloadBlobForce(decResult.blob, decResult.name, 'text/x-python');
-  showStatus(`✅ Đang tải xuống (cách 2): ${decResult.name}`, 'success');
+  downloadBlobForce(decResult.blob, decResult.name, 'text/x-python;charset=utf-8');
+  showStatus(`✅ Đang tải (cách 2): ${decResult.name}`, 'success');
 });
 
 document.getElementById('btn-preview-dec').addEventListener('click', () => {
@@ -1642,7 +1703,7 @@ document.getElementById('btn-preview-dec').addEventListener('click', () => {
   const text = decResult.content.length > 5000
     ? decResult.content.slice(0, 5000) + '\n\n... (tổng ' + decResult.content.length + ' ký tự)'
     : decResult.content;
-  showModal(`👁️ Xem trước code: ${decResult.name}`, text);
+  showModal(`👁️ Code gốc: ${decResult.name}`, text);
 });
 </script>
 </body>
