@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PyProtect Pro - Mã Hóa & Bảo Vệ Mã Nguồn Python</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0f3460 100%);
+  min-height: 100vh;
+  padding: 20px;
+  color: #e0e0e0;
+}
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: rgba(30, 30, 50, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(100, 100, 200, 0.25);
+  border-radius: 20px;
+  padding: 35px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.7), 0 0 100px rgba(80, 100, 255, 0.12);
+}
+h1 {
+  text-align: center;
+  margin-bottom: 8px;
+  font-size: 1.8rem;
+  background: linear-gradient(90deg,#7b68ee,#00d2ff,#a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.subtitle {
+  text-align: center;
+  color: #7a8ba8;
+  font-size: 0.85rem;
+  margin-bottom: 25px;
+}
+.field { margin-bottom: 16px; }
+label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: #b8c7e0;
+  font-weight: 500;
+}
+input[type="text"], input[type="password"], select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(100, 100, 200, 0.3);
+  background: rgba(20, 20, 40, 0.8);
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  outline: none;
+  transition: 0.3s;
+}
+input:focus, select:focus {
+  border-color: #7b68ee;
+  box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.18);
+}
+select option { background: #1a1a2e; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+@media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+.checkbox-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 18px 0;
+}
+@media (max-width: 700px) { .checkbox-group { grid-template-columns: 1fr; } }
+.checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(20, 20, 40, 0.6);
+  border: 1px solid rgba(100, 100, 200, 0.18);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.checkbox-item:hover {
+  border-color: rgba(123, 104, 238, 0.5);
+  background: rgba(30, 30, 60, 0.7);
+}
+.checkbox-item input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  min-width: 18px;
+  border: 2px solid #4a5578;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  margin-top: 2px;
+  transition: 0.3s;
+}
+.checkbox-item input[type="checkbox"]:checked {
+  background: linear-gradient(135deg, #7b68ee, #00d2ff);
+  border-color: #7b68ee;
+}
+.checkbox-item input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+}
+.checkbox-text strong {
+  display: block;
+  color: #e0e0e0;
+  font-size: 0.82rem;
+  margin-bottom: 2px;
+}
+.checkbox-text span {
+  color: #7a8ba8;
+  font-size: 0.72rem;
+  line-height: 1.3;
+}
+.section-title {
+  margin: 22px 0 12px;
+  font-size: 0.95rem;
+  color: #a78bfa;
+  font-weight: 600;
+  border-left: 3px solid #7b68ee;
+  padding-left: 10px;
+}
+.file-upload {
+  border: 2px dashed rgba(100, 100, 200, 0.4);
+  border-radius: 12px;
+  padding: 22px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+  background: rgba(20, 20, 40, 0.5);
+}
+.file-upload:hover {
+  border-color: #7b68ee;
+  background: rgba(30, 30, 60, 0.7);
+}
+.file-upload.dragover {
+  border-color: #00d2ff;
+  background: rgba(0, 210, 255, 0.1);
+}
+.file-upload input[type="file"] { display: none; }
+.file-icon { font-size: 1.8rem; margin-bottom: 6px; }
+.file-text { color: #b8c7e0; font-size: 0.88rem; }
+.file-hint { color: #6a7a98; font-size: 0.75rem; margin-top: 4px; }
+.file-name {
+  margin-top: 8px;
+  color: #00d2ff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  word-break: break-all;
+}
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 16px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg,#7b68ee,#00d2ff);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+  letter-spacing: 0.5px;
+  box-shadow: 0 8px 25px rgba(123, 104, 238, 0.35);
+}
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(123, 104, 238, 0.55);
+}
+button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.status {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 0.9rem;
+  display: none;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+.status.success {
+  background: rgba(0, 200, 100, 0.15);
+  border: 1px solid rgba(0, 200, 100, 0.45);
+  color: #4ade80;
+  display: block;
+}
+.status.error {
+  background: rgba(255, 60, 60, 0.15);
+  border: 1px solid rgba(255, 60, 60, 0.45);
+  color: #ff6b6b;
+  display: block;
+}
+.status.loading {
+  background: rgba(123, 104, 238, 0.15);
+  border: 1px solid rgba(123, 104, 238, 0.45);
+  color: #a78bfa;
+  display: block;
+}
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(20, 20, 40, 0.8);
+  border-radius: 4px;
+  margin-top: 12px;
+  overflow: hidden;
+  display: none;
+}
+.progress-bar.active { display: block; }
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #7b68ee, #00d2ff, #4ade80);
+  border-radius: 4px;
+  transition: width 0.3s;
+  box-shadow: 0 0 10px rgba(0, 210, 255, 0.6);
+}
+.note {
+  font-size: 0.78rem;
+  color: #6a7a98;
+  margin-top: 18px;
+  text-align: center;
+  line-height: 1.5;
+}
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 22px;
+  background: rgba(20, 20, 40, 0.6);
+  padding: 5px;
+  border-radius: 12px;
+}
+.tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 9px;
+  transition: 0.3s;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #7a8ba8;
+  user-select: none;
+}
+.tab.active {
+  background: linear-gradient(90deg,#7b68ee,#00d2ff);
+  color: #fff;
+}
+.hidden { display: none; }
+.download-panel {
+  margin-top: 22px;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(0, 200, 100, 0.12), rgba(0, 210, 255, 0.12));
+  border: 2px solid rgba(0, 200, 100, 0.5);
+  border-radius: 16px;
+  display: none;
+  animation: slideIn 0.5s ease-out;
+}
+.download-panel.active { display: block; }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.download-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.download-icon {
+  font-size: 2.2rem;
+  animation: bounce 1.6s infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.download-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #4ade80;
+  line-height: 1.3;
+}
+.file-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.file-info-item {
+  padding: 12px;
+  background: rgba(20, 20, 40, 0.7);
+  border-radius: 10px;
+  border: 1px solid rgba(100, 100, 200, 0.2);
+}
+.file-info-item .label-small {
+  font-size: 0.7rem;
+  color: #7a8ba8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+}
+.file-info-item .value {
+  font-size: 0.88rem;
+  color: #e0e0e0;
+  font-weight: 600;
+  word-break: break-all;
+}
+.file-info-item .value.green { color: #4ade80; }
+.file-info-item .value.blue { color: #60a5fa; }
+.file-info-item .value.orange { color: #fb923c; }
+.download-buttons {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 700px) {
+  .download-buttons { grid-template-columns: 1fr; }
+}
+.btn-download {
+  padding: 16px;
+  background: linear-gradient(90deg, #00c864, #00d2ff);
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 6px 22px rgba(0, 200, 100, 0.4);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 6px 22px rgba(0, 200, 100, 0.4); }
+  50% { box-shadow: 0 6px 35px rgba(0, 200, 100, 0.75); }
+}
+.btn-download:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 35px rgba(0, 200, 100, 0.7);
+}
+.btn-preview {
+  padding: 16px;
+  background: rgba(50, 50, 90, 0.9);
+  color: #e0e0e0;
+  font-weight: 700;
+  border: 1px solid rgba(100, 100, 200, 0.35);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn-preview:hover {
+  background: rgba(70, 70, 120, 0.95);
+  border-color: #7b68ee;
+  transform: translateY(-2px);
+}
+.preview-box {
+  margin-top: 14px;
+  padding: 14px;
+  background: rgba(10, 10, 25, 0.9);
+  border: 1px solid rgba(100, 100, 200, 0.25);
+  border-radius: 10px;
+  font-family: 'Consolas', monospace;
+  font-size: 0.75rem;
+  color: #8fa3c0;
+  max-height: 240px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  display: none;
+  line-height: 1.6;
+}
+.preview-box.active { display: block; }
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 6px;
+}
+.badge-real {
+  background: linear-gradient(90deg, #00c864, #00d2ff);
+  color: #fff;
+}
+.badge-count {
+  background: linear-gradient(90deg, #ff6b9d, #ffa500);
+  color: #fff;
+}
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.88);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+}
+.modal.active { display: flex; }
+.modal-content {
+  background: #0a0a1a;
+  border: 1px solid rgba(100, 100, 200, 0.35);
+  border-radius: 16px;
+  max-width: 850px;
+  width: 100%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+.modal-header {
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(100, 100, 200, 0.25);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h3 { color: #a78bfa; font-size: 1.05rem; }
+.modal-close {
+  background: none;
+  border: none;
+  color: #7a8ba8;
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: auto;
+  padding: 0 8px;
+  margin: 0;
+  box-shadow: none;
+}
+.modal-close:hover { color: #ff6b6b; transform: none; }
+.modal-body {
+  padding: 20px;
+  overflow: auto;
+  font-family: 'Consolas', monospace;
+  font-size: 0.8rem;
+  color: #b8c7e0;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.6;
+  background: #060612;
+}
+.modal-body.binary { color: #ff9a9a; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🛡️ PyProtect Pro</h1>
+  <p class="subtitle">Mã hóa & Bảo vệ mã nguồn Python — PyArmor-Style • 12 lớp • AES-256</p>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="encrypt">🔒 Mã hóa</div>
+    <div class="tab" data-tab="decrypt">🔓 Giải mã</div>
+  </div>
+
+  <!-- TAB MÃ HÓA -->
+  <div id="encrypt-panel">
+    <div class="row">
+      <div class="field">
+        <label><span>👤</span> Tên người dùng:</label>
+        <input type="text" id="username" placeholder="Nhập tên của bạn">
+      </div>
+      <div class="field">
+        <label><span>🐍</span> Phiên bản Python:</label>
+        <select id="python-version">
+          <option value="3.8">Python 3.8</option>
+          <option value="3.9">Python 3.9</option>
+          <option value="3.10">Python 3.10</option>
+          <option value="3.11" selected>Python 3.11</option>
+          <option value="3.12">Python 3.12</option>
+          <option value="3.13">Python 3.13</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label><span>🔑</span> Mật khẩu bảo vệ (tuỳ chọn):</label>
+      <input type="password" id="encrypt-pass" placeholder="Để trống = tự sinh key từ metadata">
+    </div>
+
+    <div class="section-title">🛡️ Lớp bảo vệ runtime</div>
+    <div class="checkbox-group">
+      <label class="checkbox-item">
+        <input type="checkbox" id="opt-antidebug" checked>
+        <div class="checkbox-text">
+          <strong>🛡️ Anti-Debug Protection</strong>
+          <span>Ngăn chặn debugging và reverse engineering (Chỉ Dùng Cho Code Main)</span>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="opt-anticrack" checked>
+        <div class="checkbox-text">
+          <strong>🔐 Anti-Crack & Requests Protection</strong>
+          <span>Bảo vệ khỏi crack và requests debugging như HTTP-TOOLKIT</span>
+        </div>
+      </label>
+    </div>
+
+    <div class="section-title">🎭 PyArmor-Style Obfuscation <span class="badge badge-real">MÔ PHỎNG</span></div>
+    <div class="checkbox-group">
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-pyarmor" checked>
+        <div class="checkbox-text">
+          <strong>🔒 PyArmor Wrapper</strong>
+          <span>Bọc code + bootstrap runtime + frozen filename</span>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-obfuscate" checked>
+        <div class="checkbox-text">
+          <strong>🎭 Rename Variables</strong>
+          <span>_IlO0, _IlO1... + junk code injection</span>
+        </div>
+      </label>
+    </div>
+
+    <div class="section-title">🔐 12 Lớp mã hóa <span class="badge badge-count">ALL-IN-ONE</span></div>
+    <div class="checkbox-group">
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-b64" checked>
+        <div class="checkbox-text">
+          <strong>1️⃣ Base64</strong>
+          <span>RFC 4648</span>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-b32" checked>
+        <div class="checkbox-text">
+          <strong>2️⃣ Base32</strong>
+          <span>A-Z, 2-7</span>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-b85" checked>
+        <div class="checkbox-text">
+          <strong>3️⃣ Base85</strong>
+          <span>ASCII85</span>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-hex" checked>
+        <div class="checkbox-text">
+          <strong>4️⃣ Hex</strong>
+          <span>0-9, a-f</span>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-rot13" checked>
+        <div class="checkbox-text">
+          <strong>5️⃣ ROT13</strong>
+          <span>Dịch chuyển alphabet</span>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-xor" checked>
+        <div class="checkbox-text">
+          <strong>6️⃣ XOR Cipher</strong>
+          <span>Key 32 bytes ngẫu nhiên</span>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-reverse" checked>
+        <div class="checkbox-text">
+          <strong>7️⃣ Reverse Bytes</strong>
+          <span>Đảo ngược toàn bộ</span>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-caesar" checked>
+        <div class="checkbox-text">
+          <strong>8️⃣ Caesar Cipher</strong>
+          <span>Dịch chuyển ASCII +N</span>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-substitute" checked>
+        <div class="checkbox-text">
+          <strong>9️⃣ Byte Substitution</strong>
+          <span>Bảng hoán vị 256 bytes</span>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-aes" checked>
+        <div class="checkbox-text">
+          <strong>🔟 AES-256-CBC</strong>
+          <span>PBKDF2 10.000 vòng + salt + IV</span>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-zip" checked>
+        <div class="checkbox-text">
+          <strong>1️⃣1️⃣ ZIP DEFLATE</strong>
+          <span>Nén level 9</span>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="enc-loader" checked>
+        <div class="checkbox-text">
+          <strong>1️⃣2️⃣ Loader Wrapper</strong>
+          <span>Python tự giải mã khi chạy</span>
+        </div>
+      </label>
+    </div>
+
+    <div class="field">
+      <label><span>📂</span> File Python (.py):</label>
+      <div class="file-upload" id="upload-area">
+        <input type="file" id="encrypt-file" accept=".py">
+        <div class="file-icon">📁</div>
+        <div class="file-text">Chọn file Python để bảo vệ</div>
+        <div class="file-hint">Hỗ trợ file .py (Max 10MB)</div>
+        <div class="file-name" id="file-name"></div>
+      </div>
+    </div>
+
+    <button id="btn-encrypt">🚀 Mã hóa 12 lớp (PyArmor-Style)</button>
+
+    <div class="download-panel" id="download-panel-enc">
+      <div class="download-header">
+        <div class="download-icon">🎉</div>
+        <div class="download-title">Mã hóa hoàn tất!<br>Chọn cách tải bên dưới</div>
+      </div>
+      <div class="file-info">
+        <div class="file-info-item">
+          <div class="label-small">📦 File</div>
+          <div class="value green" id="dl-name-enc">-</div>
+        </div>
+        <div class="file-info-item">
+          <div class="label-small">📊 Kích thước</div>
+          <div class="value blue" id="dl-size-enc">-</div>
+        </div>
+        <div class="file-info-item">
+          <div class="label-small">🛡️ Số lớp</div>
+          <div class="value orange" id="dl-layers-enc">-</div>
+        </div>
+        <div class="file-info-item">
+          <div class="label-small">🎭 Obfuscation</div>
+          <div class="value green" id="dl-obf-enc">-</div>
+        </div>
+      </div>
+      <div class="download-buttons">
+        <button class="btn-download" id="btn-download-enc">⬇️ TẢI XUỐNG NGAY</button>
+        <button class="btn-preview" id="btn-download-enc2">💾 Tải (cách 2)</button>
+        <button class="btn-preview" id="btn-preview-enc">👁️ Xem trước</button>
+      </div>
+    </div>
+
+    <div class="preview-box" id="preview-box"></div>
+  </div>
+
+  <!-- TAB GIẢI MÃ -->
+  <div id="decrypt-panel" class="hidden">
+    <div class="field">
+      <label><span>📂</span> File đã mã hóa (.enc / .zip):</label>
+      <div class="file-upload" id="upload-area-dec">
+        <input type="file" id="decrypt-file" accept=".enc,.zip">
+        <div class="file-icon">🔐</div>
+        <div class="file-text">Chọn file để giải mã</div>
+        <div class="file-hint">Hỗ trợ file .enc và .zip</div>
+        <div class="file-name" id="file-name-dec"></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label><span>🔑</span> Mật khẩu giải mã:</label>
+      <input type="password" id="decrypt-pass" placeholder="Nhập mật khẩu...">
+    </div>
+
+    <button id="btn-decrypt">🔓 Giải mã 12 lớp</button>
+
+    <div class="download-panel" id="download-panel-dec">
+      <div class="download-header">
+        <div class="download-icon">🎉</div>
+        <div class="download-title">Giải mã hoàn tất!<br>Chọn cách tải bên dưới</div>
+      </div>
+      <div class="file-info">
+        <div class="file-info-item">
+          <div class="label-small">📦 File</div>
+          <div class="value green" id="dl-name-dec">-</div>
+        </div>
+        <div class="file-info-item">
+          <div class="label-small">📊 Kích thước</div>
+          <div class="value blue" id="dl-size-dec">-</div>
+        </div>
+        <div class="file-info-item">
+          <div class="label-small">👤 User</div>
+          <div class="value green" id="dl-user-dec">-</div>
+        </div>
+        <div class="file-info-item">
+          <div class="label-small">🐍 Python</div>
+          <div class="value orange" id="dl-py-dec">-</div>
+        </div>
+      </div>
+      <div class="download-buttons">
+        <button class="btn-download" id="btn-download-dec">⬇️ TẢI XUỐNG NGAY</button>
+        <button class="btn-preview" id="btn-download-dec2">💾 Tải (cách 2)</button>
+        <button class="btn-preview" id="btn-preview-dec">👁️ Xem trước</button>
+      </div>
+    </div>
+
+    <div class="preview-box" id="preview-box-dec"></div>
+  </div>
+
+  <div class="progress-bar" id="progress-bar">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <p class="note">⚡ Xử lý 100% trên trình duyệt — File không rời khỏi máy bạn</p>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modal-title">Xem trước</h3>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+/* ===== TABS ===== */
+const tabs = document.querySelectorAll('.tab');
+const panels = {
+  encrypt: document.getElementById('encrypt-panel'),
+  decrypt: document.getElementById('decrypt-panel')
+};
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.tab;
+    Object.keys(panels).forEach(k => {
+      panels[k].classList.toggle('hidden', k !== target);
+    });
+    hideStatus();
+  });
+});
+
+/* ===== STATUS ===== */
+const statusEl = document.getElementById('status');
+const progressBar = document.getElementById('progress-bar');
+const progressFill = document.getElementById('progress-fill');
+
+function showStatus(msg, type = 'success') {
+  statusEl.textContent = msg;
+  statusEl.className = 'status ' + type;
+}
+function hideStatus() {
+  statusEl.className = 'status';
+  progressBar.classList.remove('active');
+}
+function setProgress(p) {
+  progressBar.classList.add('active');
+  progressFill.style.width = p + '%';
+}
+
+/* ===== UPLOAD ===== */
+function setupUpload(areaId, inputId, nameId) {
+  const area = document.getElementById(areaId);
+  const input = document.getElementById(inputId);
+  const nameEl = document.getElementById(nameId);
+
+  area.addEventListener('click', () => input.click());
+  area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('dragover'); });
+  area.addEventListener('dragleave', () => area.classList.remove('dragover'));
+  area.addEventListener('drop', e => {
+    e.preventDefault();
+    area.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+      input.files = e.dataTransfer.files;
+      nameEl.textContent = '📎 ' + e.dataTransfer.files[0].name;
+    }
+  });
+  input.addEventListener('change', () => {
+    if (input.files.length) nameEl.textContent = '📎 ' + input.files[0].name;
+    else nameEl.textContent = '';
+  });
+}
+setupUpload('upload-area', 'encrypt-file', 'file-name');
+setupUpload('upload-area-dec', 'decrypt-file', 'file-name-dec');
+
+/* ===== DOWNLOAD - 3 CÁCH FIXED ===== */
+function downloadMethod1(blob, filename) {
+  try {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.rel = 'noopener';
+    a.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      try {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch(e) {}
+    }, 1500);
+    return true;
+  } catch (e) {
+    console.error('Method1 failed:', e);
+    return false;
+  }
+}
+
+function downloadMethod2(blob, filename) {
+  try {
+    const reader = new FileReader();
+    reader.onload = function() {
+      const a = document.createElement('a');
+      a.href = reader.result;
+      a.download = filename;
+      a.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        try { document.body.removeChild(a); } catch(e) {}
+      }, 1500);
+    };
+    reader.readAsDataURL(blob);
+    return true;
+  } catch (e) {
+    console.error('Method2 failed:', e);
+    return false;
+  }
+}
+
+function downloadMethod3(blob, filename) {
+  try {
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, '_blank');
+    if (!win) return downloadMethod1(blob, filename);
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    return true;
+  } catch (e) {
+    console.error('Method3 failed:', e);
+    return false;
+  }
+}
+
+function downloadBlob(blob, filename, type) {
+  if (!(blob instanceof Blob)) {
+    blob = new Blob([blob], { type: type || 'application/octet-stream' });
+  }
+  console.log('[Download]', filename, blob.size, 'bytes');
+  if (downloadMethod1(blob, filename)) return true;
+  if (downloadMethod2(blob, filename)) return true;
+  return downloadMethod3(blob, filename);
+}
+
+function downloadBlobForce(blob, filename, type) {
+  if (!(blob instanceof Blob)) {
+    blob = new Blob([blob], { type: type || 'application/octet-stream' });
+  }
+  console.log('[DownloadForce]', filename);
+  downloadMethod2(blob, filename);
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+  return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+}
+
+function readFileAsArrayBuffer(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function wordArrayToUint8Array(wa) {
+  const words = wa.words, sigBytes = wa.sigBytes;
+  const u8 = new Uint8Array(sigBytes);
+  for (let i = 0; i < sigBytes; i++) {
+    u8[i] = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
+  }
+  return u8;
+}
+function uint8ArrayToWordArray(u8) {
+  const words = [];
+  for (let i = 0; i < u8.length; i++) {
+    words[i >>> 2] |= u8[i] << (24 - (i % 4) * 8);
+  }
+  return CryptoJS.lib.WordArray.create(words, u8.length);
+}
+
+/* ===== MODAL ===== */
+const modal = document.getElementById('modal');
+const modalBody = document.getElementById('modal-body');
+const modalTitle = document.getElementById('modal-title');
+document.getElementById('modal-close').addEventListener('click', () => modal.classList.remove('active'));
+modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
+function showModal(title, content, isBinary = false) {
+  modalTitle.textContent = title;
+  modalBody.textContent = content;
+  modalBody.className = 'modal-body' + (isBinary ? ' binary' : '');
+  modal.classList.add('active');
+}
+
+/* ===== ENCODING LAYERS ===== */
+function toBase64(u8) {
+  let bin = '';
+  const chunk = 8192;
+  for (let i = 0; i < u8.length; i += chunk) {
+    bin += String.fromCharCode.apply(null, u8.subarray(i, i + chunk));
+  }
+  return btoa(bin);
+}
+function fromBase64(str) {
+  const bin = atob(str);
+  const u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  return u8;
+}
+
+const B32_ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+function toBase32(u8) {
+  let bits = 0, value = 0, output = '';
+  for (let i = 0; i < u8.length; i++) {
+    value = (value << 8) | u8[i];
+    bits += 8;
+    while (bits >= 5) {
+      output += B32_ALPHA[(value >>> (bits - 5)) & 31];
+      bits -= 5;
+    }
+  }
+  if (bits > 0) output += B32_ALPHA[(value << (5 - bits)) & 31];
+  while (output.length % 8 !== 0) output += '=';
+  return output;
+}
+function fromBase32(str) {
+  str = str.replace(/=+$/, '').toUpperCase();
+  let bits = 0, value = 0;
+  const out = [];
+  for (let i = 0; i < str.length; i++) {
+    const idx = B32_ALPHA.indexOf(str[i]);
+    if (idx === -1) continue;
+    value = (value << 5) | idx;
+    bits += 5;
+    if (bits >= 8) {
+      out.push((value >>> (bits - 8)) & 0xff);
+      bits -= 8;
+    }
+  }
+  return new Uint8Array(out);
+}
+
+function toBase85(u8) {
+  let output = '';
+  for (let i = 0; i < u8.length; i += 4) {
+    const chunk = u8.slice(i, i + 4);
+    const padded = new Uint8Array(4);
+    padded.set(chunk);
+    const num = (padded[0] << 24) | (padded[1] << 16) | (padded[2] << 8) | padded[3];
+    if (num === 0 && chunk.length === 4) { output += 'z'; continue; }
+    const chars = [];
+    let n = num >>> 0;
+    for (let j = 0; j < 5; j++) {
+      chars.unshift(String.fromCharCode((n % 85) + 33));
+      n = Math.floor(n / 85);
+    }
+    output += chars.join('').slice(0, chunk.length + 1);
+  }
+  return output;
+}
+function fromBase85(str) {
+  const out = [];
+  let i = 0;
+  while (i < str.length) {
+    if (str[i] === 'z') { out.push(0, 0, 0, 0); i++; continue; }
+    const chunk = str.slice(i, i + 5);
+    i += 5;
+    if (chunk.length < 5) {
+      let padded = chunk;
+      while (padded.length < 5) padded += 'u';
+      let num = 0;
+      for (let j = 0; j < 5; j++) num = num * 85 + (padded.charCodeAt(j) - 33);
+      const bytes = [(num >>> 24) & 0xff, (num >>> 16) & 0xff, (num >>> 8) & 0xff, num & 0xff];
+      out.push(...bytes.slice(0, chunk.length - 1));
+      continue;
+    }
+    let num = 0;
+    for (let j = 0; j < 5; j++) num = num * 85 + (chunk.charCodeAt(j) - 33);
+    out.push((num >>> 24) & 0xff, (num >>> 16) & 0xff, (num >>> 8) & 0xff, num & 0xff);
+  }
+  return new Uint8Array(out);
+}
+
+function toHex(u8) {
+  let s = '';
+  for (let i = 0; i < u8.length; i++) s += u8[i].toString(16).padStart(2, '0');
+  return s;
+}
+function fromHex(str) {
+  str = str.replace(/[^0-9a-fA-F]/g, '');
+  const out = new Uint8Array(str.length / 2);
+  for (let i = 0; i < out.length; i++) out[i] = parseInt(str.substr(i * 2, 2), 16);
+  return out;
+}
+
+function rot13(str) {
+  return str.replace(/[a-zA-Z]/g, c => {
+    const base = c <= 'Z' ? 65 : 97;
+    return String.fromCharCode(((c.charCodeAt(0) - base + 13) % 26) + base);
+  });
+}
+
+function xorCipher(u8, key) {
+  const out = new Uint8Array(u8.length);
+  for (let i = 0; i < u8.length; i++) out[i] = u8[i] ^ key[i % key.length];
+  return out;
+}
+
+function reverseBytes(u8) {
+  const out = new Uint8Array(u8.length);
+  for (let i = 0; i < u8.length; i++) out[i] = u8[u8.length - 1 - i];
+  return out;
+}
+
+function caesarCipher(u8, shift) {
+  const out = new Uint8Array(u8.length);
+  for (let i = 0; i < u8.length; i++) out[i] = (u8[i] + shift) & 0xff;
+  return out;
+}
+
+function generateSubTable(seed) {
+  const table = new Uint8Array(256);
+  const inverse = new Uint8Array(256);
+  for (let i = 0; i < 256; i++) table[i] = i;
+  let s = seed;
+  const rand = () => {
+    s = (s * 1103515245 + 12345) & 0x7fffffff;
+    return s / 0x7fffffff;
+  };
+  for (let i = 255; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [table[i], table[j]] = [table[j], table[i]];
+  }
+  for (let i = 0; i < 256; i++) inverse[table[i]] = i;
+  return { table, inverse };
+}
+function substituteBytes(u8, table) {
+  const out = new Uint8Array(u8.length);
+  for (let i = 0; i < u8.length; i++) out[i] = table[u8[i]];
+  return out;
+}
+
+/* ===== PYARMOR-STYLE OBFUSCATION ===== */
+function pyArmorObfuscate(code) {
+  const lines = code.split('\n');
+  const output = [];
+  output.push('# -*- coding: utf-8 -*-');
+  output.push('# PyArmor-Style Obfuscated Script');
+  output.push('# Created by PyProtect Pro (Web Edition)');
+  output.push('import sys as _sys');
+  output.push('_sys.setrecursionlimit(10000)');
+  output.push('');
+
+  const varMap = new Map();
+  let counter = 0;
+  const generateName = () => {
+    counter++;
+    const chars = 'IlO0';
+    let name = '_';
+    let n = counter;
+    while (n > 0) { name += chars[n % 4]; n = Math.floor(n / 4); }
+    return name;
+  };
+
+  const funcRegex = /^(\s*)def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/;
+  const classRegex = /^(\s*)class\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*[\(:]/;
+  const varRegex = /^(\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*/;
+  const protectedNames = new Set([
+    'self','cls','print','len','range','str','int','float','list','dict','set','tuple',
+    'True','False','None','and','or','not','if','else','elif','for','while','def','class',
+    'return','import','from','as','in','is','try','except','finally','with','lambda','yield',
+    'global','nonlocal','pass','break','continue','raise','assert','del','__init__','__name__','__main__'
+  ]);
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+
+    const funcMatch = line.match(funcRegex);
+    if (funcMatch) {
+      const name = funcMatch[2];
+      if (!protectedNames.has(name) && !varMap.has(name)) varMap.set(name, generateName());
+      if (varMap.has(name)) line = line.replace(new RegExp('\\b' + name + '\\b', 'g'), varMap.get(name));
+      output.push(line); continue;
+    }
+    const classMatch = line.match(classRegex);
+    if (classMatch) {
+      const name = classMatch[2];
+      if (!protectedNames.has(name) && !varMap.has(name)) varMap.set(name, generateName());
+      if (varMap.has(name)) line = line.replace(new RegExp('\\b' + name + '\\b', 'g'), varMap.get(name));
+      output.push(line); continue;
+    }
+    const varMatch = line.match(varRegex);
+    if (varMatch) {
+      const name = varMatch[2];
+      if (!protectedNames.has(name) && !varMap.has(name)) varMap.set(name, generateName());
+      if (varMap.has(name)) line = line.replace(new RegExp('\\b' + name + '\\b', 'g'), varMap.get(name));
+    }
+    varMap.forEach((newName, oldName) => {
+      line = line.replace(new RegExp('\\b' + oldName + '\\b', 'g'), newName);
+    });
+
+    if (i % 9 === 0 && line.trim() && !line.trim().startsWith('#') && !line.trim().startsWith('import')) {
+      const junk = [
+        `_ = ${Math.floor(Math.random() * 1000)}`,
+        `__ = "${Math.random().toString(36).slice(2, 8)}"`,
+        `_x = lambda: ${Math.floor(Math.random() * 100)}`,
+        `if False: pass`,
+        `_sys._getframe`
+      ];
+      output.push('    ' + junk[Math.floor(Math.random() * junk.length)]);
+    }
+    output.push(line);
+  }
+  return output.join('\n');
+}
+
+/* ===== ANTI DEBUG / CRACK ===== */
+function getAntiDebugCode() {
+  return `
+# === PyArmor-Style Anti-Debug Protection ===
+import sys as _sys, os as _os
+def _anti_debug():
+    try:
+        if _sys.gettrace() is not None: _sys.exit(1)
+        if _os.environ.get('PYTHONINSPECT'): _sys.exit(1)
+        if _os.environ.get('PYTHONBREAKPOINT'): _sys.exit(1)
+        import ctypes
+        if _os.name == 'nt':
+            if ctypes.windll.kernel32.IsDebuggerPresent(): _sys.exit(1)
+    except Exception: pass
+_anti_debug()
+`;
+}
+function getAntiCrackCode() {
+  return `
+# === PyArmor-Style Anti-Crack Protection ===
+import sys as _sys
+def _anti_crack():
+    try:
+        blacklist = ['frida','hook','http_toolkit','toolkit','fiddler','charles','mitmproxy','wireshark']
+        for mod in list(_sys.modules.keys()):
+            if any(x in mod.lower() for x in blacklist):
+                _sys.exit(1)
+    except Exception: pass
+_anti_crack()
+`;
+}
+
+function createLoaderWrapper(encodedData, method) {
+  const decodeCall = method === 'base64' ? '_b64.b64decode(_data)' :
+                     method === 'base32' ? '_b64.b32decode(_data)' :
+                     method === 'base85' ? '_b64.b85decode(_data)' :
+                     method === 'hex' ? 'bytes.fromhex(_data)' :
+                     '_data.encode("latin1")';
+
+  return `# -*- coding: utf-8 -*-
+# PyProtect Pro Loader
+import base64 as _b64
+import sys as _sys
+if _sys.version_info < (3, 7):
+    raise RuntimeError("Python 3.7+ required")
+
+_data = """${encodedData}"""
+
+def _decode():
+    return ${decodeCall}
+
+try:
+    _code = compile(_decode(), '<frozen protected>', 'exec')
+    exec(_code)
+except Exception as e:
+    print(f"[PyProtect] Error: {e}")
+    _sys.exit(1)
+`;
+}
+
+/* ===== BIẾN KẾT QUẢ ===== */
+let encResult = null;
+let decResult = null;
+
+/* ===== MÃ HÓA ===== */
+document.getElementById('btn-encrypt').addEventListener('click', async () => {
+  const fileInput = document.getElementById('encrypt-file');
+  const username = document.getElementById('username').value.trim() || 'anonymous';
+  const pyVersion = document.getElementById('python-version').value;
+  const userPass = document.getElementById('encrypt-pass').value;
+  const antiDebug = document.getElementById('opt-antidebug').checked;
+  const antiCrack = document.getElementById('opt-anticrack').checked;
+  const usePyArmor = document.getElementById('enc-pyarmor').checked;
+  const useObfuscate = document.getElementById('enc-obfuscate').checked;
+  const useB64 = document.getElementById('enc-b64').checked;
+  const useB32 = document.getElementById('enc-b32').checked;
+  const useB85 = document.getElementById('enc-b85').checked;
+  const useHex = document.getElementById('enc-hex').checked;
+  const useRot13 = document.getElementById('enc-rot13').checked;
+  const useXor = document.getElementById('enc-xor').checked;
+  const useReverse = document.getElementById('enc-reverse').checked;
+  const useCaesar = document.getElementById('enc-caesar').checked;
+  const useSubstitute = document.getElementById('enc-substitute').checked;
+  const useAes = document.getElementById('enc-aes').checked;
+  const useZip = document.getElementById('enc-zip').checked;
+  const useLoader = document.getElementById('enc-loader').checked;
+
+  if (!fileInput.files.length) return showStatus('⚠️ Vui lòng chọn file Python!', 'error');
+  const file = fileInput.files[0];
+  if (file.size > 10 * 1024 * 1024) return showStatus('⚠️ File vượt quá 10MB!', 'error');
+
+  document.getElementById('download-panel-enc').classList.remove('active');
+  document.getElementById('preview-box').classList.remove('active');
+
+  try {
+    hideStatus();
+    showStatus('⏳ Đang xử lý 12 lớp...', 'loading');
+    setProgress(3);
+
+    const buffer = await readFileAsArrayBuffer(file);
+    let codeText = new TextDecoder('utf-8').decode(buffer);
+    const log = [];
+
+    if (antiDebug) { codeText = getAntiDebugCode() + '\n' + codeText; log.push('1️⃣ Anti-Debug'); }
+    if (antiCrack) { codeText = getAntiCrackCode() + '\n' + codeText; log.push('2️⃣ Anti-Crack'); }
+    setProgress(10);
+
+    if (usePyArmor) { codeText = pyArmorObfuscate(codeText); log.push('3️⃣ PyArmor-Style'); }
+    else if (useObfuscate) { codeText = pyArmorObfuscate(codeText); log.push('4️⃣ Rename Vars'); }
+    setProgress(20);
+
+    let bytes = new TextEncoder().encode(codeText);
+
+    let xorKey = null;
+    if (useXor) {
+      xorKey = new Uint8Array(32);
+      crypto.getRandomValues(xorKey);
+      bytes = xorCipher(bytes, xorKey);
+      log.push('5️⃣ XOR (32B key)');
+    }
+    setProgress(28);
+
+    let subSeed = null;
+    if (useSubstitute) {
+      subSeed = Math.floor(Math.random() * 0x7fffffff);
+      const { table } = generateSubTable(subSeed);
+      bytes = substituteBytes(bytes, table);
+      log.push('6️⃣ Byte Substitution');
+    }
+    setProgress(36);
+
+    let caesarShift = null;
+    if (useCaesar) {
+      caesarShift = Math.floor(Math.random() * 200) + 1;
+      bytes = caesarCipher(bytes, caesarShift);
+      log.push('7️⃣ Caesar +' + caesarShift);
+    }
+    setProgress(44);
+
+    if (useReverse) {
+      bytes = reverseBytes(bytes);
+      log.push('8️⃣ Reverse Bytes');
+    }
+    setProgress(50);
+
+    if (useRot13) {
+      const tempText = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
+      const rot = rot13(tempText);
+      bytes = new Uint8Array(rot.length);
+      for (let i = 0; i < rot.length; i++) bytes[i] = rot.charCodeAt(i) & 0xff;
+      log.push('9️⃣ ROT13');
+    }
+    setProgress(56);
+
+    let encoded = '';
+    let usedEncoding = null;
+    if (useHex) { encoded = toHex(bytes); usedEncoding = 'hex'; log.push('🔟 Hex'); }
+    else if (useB85) { encoded = toBase85(bytes); usedEncoding = 'base85'; log.push('🔟 Base85'); }
+    else if (useB32) { encoded = toBase32(bytes); usedEncoding = 'base32'; log.push('🔟 Base32'); }
+    else if (useB64) { encoded = toBase64(bytes); usedEncoding = 'base64'; log.push('🔟 Base64'); }
+    setProgress(64);
+
+    if (useLoader && usedEncoding) {
+      codeText = createLoaderWrapper(encoded, usedEncoding);
+      log.push('1️⃣1️⃣ Loader Wrapper');
+    } else {
+      codeText = encoded;
+    }
+    setProgress(72);
+
+    const metadata = {
+      user: username, pyVersion,
+      antiDebug, antiCrack,
+      layers: {
+        pyarmor: usePyArmor, obfuscate: useObfuscate,
+        base64: useB64, base32: useB32, base85: useB85, hex: useHex,
+        rot13: useRot13, xor: useXor, reverse: useReverse,
+        caesar: useCaesar, substitute: useSubstitute,
+        aes: useAes, zip: useZip, loader: useLoader
+      },
+      encoding: usedEncoding,
+      xorKey: xorKey ? Array.from(xorKey) : null,
+      subSeed: subSeed,
+      caesarShift: caesarShift,
+      timestamp: Date.now(),
+      fileName: file.name,
+      checksum: CryptoJS.SHA256(codeText).toString()
+    };
+
+    const passKey = userPass || `PyProtect_${username}_${pyVersion}_${metadata.timestamp}`;
+    metadata.passKeyHash = CryptoJS.SHA256(passKey).toString().slice(0, 16);
+
+    let finalBytes;
+    if (useAes) {
+      const salt = CryptoJS.lib.WordArray.random(128 / 8);
+      const iv = CryptoJS.lib.WordArray.random(128 / 8);
+      const key = CryptoJS.PBKDF2(passKey, salt, { keySize: 256 / 32, iterations: 10000 });
+      const wordArray = uint8ArrayToWordArray(new TextEncoder().encode(codeText));
+      const encrypted = CryptoJS.AES.encrypt(wordArray, key, {
+        iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7
+      });
+
+      const metaJson = JSON.stringify(metadata);
+      const metaBytes = new TextEncoder().encode(metaJson);
+      const magic = new Uint8Array([0x50, 0x59, 0x50, 0x52]); // PYPR
+      const version = new Uint8Array([0x03]);
+      const metaLen = new Uint8Array(4);
+      new DataView(metaLen.buffer).setUint32(0, metaBytes.length, false);
+      const saltBytes = wordArrayToUint8Array(salt);
+      const ivBytes = wordArrayToUint8Array(iv);
+      const cipherBytes = wordArrayToUint8Array(encrypted.ciphertext);
+
+      const totalLen = 4 + 1 + 4 + metaBytes.length + 16 + 16 + cipherBytes.length;
+      finalBytes = new Uint8Array(totalLen);
+      let offset = 0;
+      finalBytes.set(magic, offset); offset += 4;
+      finalBytes.set(version, offset); offset += 1;
+      finalBytes.set(metaLen, offset); offset += 4;
+      finalBytes.set(metaBytes, offset); offset += metaBytes.length;
+      finalBytes.set(saltBytes, offset); offset += 16;
+      finalBytes.set(ivBytes, offset); offset += 16;
+      finalBytes.set(cipherBytes, offset);
+      log.push('1️⃣2️⃣ AES-256-CBC');
+    } else {
+      finalBytes = new TextEncoder().encode(codeText);
+    }
+    setProgress(85);
+
+    let outputName = file.name.replace(/\.py$/i, '') + '.enc';
+    let outputType = 'application/octet-stream';
+    let outputBlob;
+
+    if (useZip) {
+      const zip = new JSZip();
+      zip.file('payload.enc', finalBytes);
+      zip.file('meta.json', JSON.stringify(metadata, null, 2));
+      outputBlob = await zip.generateAsync({
+        type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 9 }
+      });
+      outputName = file.name.replace(/\.py$/i, '') + '.zip';
+      outputType = 'application/zip';
+      log.push('📦 ZIP DEFLATE-9');
+    } else {
+      outputBlob = new Blob([finalBytes], { type: outputType });
+    }
+
+    setProgress(100);
+
+    encResult = {
+      blob: outputBlob,
+      name: outputName,
+      type: outputType,
+      size: outputBlob.size,
+      layers: log.length,
+      log: log,
+      metadata: metadata
+    };
+
+    document.getElementById('dl-name-enc').textContent = outputName;
+    document.getElementById('dl-size-enc').textContent = formatSize(outputBlob.size);
+    document.getElementById('dl-layers-enc').textContent = log.length + ' lớp';
+    document.getElementById('dl-obf-enc').textContent = usePyArmor ? 'PyArmor-Style' : (useObfuscate ? 'Rename' : 'Không');
+    const panelEnc = document.getElementById('download-panel-enc');
+    panelEnc.classList.add('active');
+    panelEnc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    const preview = document.getElementById('preview-box');
+    preview.textContent =
+      '📋 Báo cáo mã hóa 12 lớp:\n' +
+      '━━━━━━━━━━━━━━━━━━━━━━━\n' +
+      log.join('\n') +
+      '\n━━━━━━━━━━━━━━━━━━━━━━━\n' +
+      `📦 File: ${outputName}\n` +
+      `📊 Gốc: ${formatSize(file.size)} → Sau: ${formatSize(outputBlob.size)}\n` +
+      `👤 User: ${username} | 🐍 Python: ${pyVersion}\n` +
+      `🔍 Checksum: ${metadata.checksum.slice(0, 32)}...`;
+    preview.classList.add('active');
+
+    showStatus(`✅ Mã hóa ${log.length} lớp thành công!\nNhấn "TẢI XUỐNG NGAY" để lưu file.`, 'success');
+  } catch (err) {
+    console.error(err);
+    showStatus('❌ Lỗi: ' + err.message, 'error');
+  }
+});
+
+/* ===== NÚT TẢI ===== */
+document.getElementById('btn-download-enc').addEventListener('click', () => {
+  if (!encResult) return showStatus('⚠️ Chưa có file!', 'error');
+  const ok = downloadBlob(encResult.blob, encResult.name, encResult.type);
+  if (ok) showStatus(`✅ Đang tải xuống: ${encResult.name}`, 'success');
+  else showStatus('❌ Tải xuống thất bại! Thử "Tải (cách 2)"', 'error');
+});
+
+document.getElementById('btn-download-enc2').addEventListener('click', () => {
+  if (!encResult) return showStatus('⚠️ Chưa có file!', 'error');
+  downloadBlobForce(encResult.blob, encResult.name, encResult.type);
+  showStatus(`✅ Đang tải xuống (cách 2): ${encResult.name}`, 'success');
+});
+
+document.getElementById('btn-preview-enc').addEventListener('click', async () => {
+  if (!encResult) return;
+  const slice = encResult.blob.slice(0, 4096);
+  const buf = await slice.arrayBuffer();
+  const u8 = new Uint8Array(buf);
+
+  let isText = true;
+  let text = '';
+  try {
+    text = new TextDecoder('utf-8', { fatal: true }).decode(u8);
+  } catch {
+    isText = false;
+    text = '=== Binary (512 byte đầu) ===\n\n' +
+      Array.from(u8.slice(0, 512)).map((b, i) =>
+        b.toString(16).padStart(2, '0') + ((i + 1) % 16 === 0 ? '\n' : ' ')
+      ).join('');
+  }
+  const displayText = text.length > 3000 ? text.slice(0, 3000) + '\n\n... (rút gọn)' : text;
+  showModal(`👁️ Xem trước: ${encResult.name}`, displayText, !isText);
+});
+
+/* ===== GIẢI MÃ ===== */
+document.getElementById('btn-decrypt').addEventListener('click', async () => {
+  const fileInput = document.getElementById('decrypt-file');
+  const userPass = document.getElementById('decrypt-pass').value;
+
+  if (!fileInput.files.length) return showStatus('⚠️ Vui lòng chọn file!', 'error');
+
+  document.getElementById('download-panel-dec').classList.remove('active');
+  document.getElementById('preview-box-dec').classList.remove('active');
+
+  try {
+    hideStatus();
+    showStatus('⏳ Đang giải mã...', 'loading');
+    setProgress(10);
+
+    const buffer = await readFileAsArrayBuffer(fileInput.files[0]);
+    let data = new Uint8Array(buffer);
+    let metadata = null;
+    const log = [];
+
+    if (data[0] === 0x50 && data[1] === 0x4B) {
+      const zip = await JSZip.loadAsync(buffer);
+      const metaFile = zip.file('meta.json');
+      const payloadFile = zip.file('payload.enc');
+      if (!metaFile || !payloadFile) throw new Error('File ZIP không hợp lệ!');
+      metadata = JSON.parse(await metaFile.async('string'));
+      data = await payloadFile.async('uint8array');
+      log.push('📦 Giải nén ZIP');
+    }
+    setProgress(20);
+
+    let codeText;
+    if (data[0] === 0x50 && data[1] === 0x59 && data[2] === 0x50 && data[3] === 0x52) {
+      if (!metadata) {
+        const metaLen = new DataView(data.buffer, data.byteOffset + 5, 4).getUint32(0, false);
+        const metaBytes = data.slice(9, 9 + metaLen);
+        metadata = JSON.parse(new TextDecoder().decode(metaBytes));
+      }
+      const metaLen = new DataView(data.buffer, data.byteOffset + 5, 4).getUint32(0, false);
+      const metaStart = 9;
+      const saltStart = metaStart + metaLen;
+      const ivStart = saltStart + 16;
+      const cipherStart = ivStart + 16;
+
+      const salt = uint8ArrayToWordArray(data.slice(saltStart, saltStart + 16));
+      const iv = uint8ArrayToWordArray(data.slice(ivStart, ivStart + 16));
+      const ciphertext = uint8ArrayToWordArray(data.slice(cipherStart));
+
+      const passKey = userPass || `PyProtect_${metadata.user}_${metadata.pyVersion}_${metadata.timestamp}`;
+      const key = CryptoJS.PBKDF2(passKey, salt, { keySize: 256 / 32, iterations: 10000 });
+      const decrypted = CryptoJS.AES.decrypt(
+        { ciphertext }, key,
+        { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
+      );
+
+      const decryptedBytes = wordArrayToUint8Array(decrypted);
+      if (!decryptedBytes.length) throw new Error('Sai mật khẩu hoặc file hỏng!');
+      codeText = new TextDecoder().decode(decryptedBytes);
+      log.push('🔓 Giải mã AES-256');
+    } else {
+      codeText = new TextDecoder().decode(data);
+    }
+    setProgress(40);
+
+    if (metadata) {
+      if (metadata.layers.loader) {
+        const match = codeText.match(/_data = """([\s\S]*?)"""/);
+        if (match) { codeText = match[1]; log.push('🔓 Bóc Loader'); }
+      }
+      if (metadata.encoding) {
+        const enc = metadata.encoding;
+        let bytes;
+        if (enc === 'base64') bytes = fromBase64(codeText);
+        else if (enc === 'base32') bytes = fromBase32(codeText);
+        else if (enc === 'base85') bytes = fromBase85(codeText);
+        else if (enc === 'hex') bytes = fromHex(codeText);
+        else bytes = new TextEncoder().encode(codeText);
+
+        if (metadata.layers.rot13) {
+          const tempText = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
+          const rot = rot13(tempText);
+          bytes = new Uint8Array(rot.length);
+          for (let i = 0; i < rot.length; i++) bytes[i] = rot.charCodeAt(i) & 0xff;
+          log.push('🔓 Đảo ROT13');
+        }
+        if (metadata.layers.reverse) {
+          bytes = reverseBytes(bytes);
+          log.push('🔓 Đảo Reverse');
+        }
+        if (metadata.layers.caesar && metadata.caesarShift) {
+          bytes = caesarCipher(bytes, (256 - metadata.caesarShift) % 256);
+          log.push('🔓 Đảo Caesar');
+        }
+        if (metadata.layers.substitute && metadata.subSeed !== null) {
+          const { inverse } = generateSubTable(metadata.subSeed);
+          bytes = substituteBytes(bytes, inverse);
+          log.push('🔓 Đảo Substitution');
+        }
+        if (metadata.layers.xor && metadata.xorKey) {
+          const key = new Uint8Array(metadata.xorKey);
+          bytes = xorCipher(bytes, key);
+          log.push('🔓 Đảo XOR');
+        }
+
+        codeText = new TextDecoder('latin1').decode(bytes);
+        log.push('🔓 Giải mã ' + enc);
+      }
+    }
+    setProgress(80);
+
+    try {
+      codeText = codeText.replace(/\\u([0-9a-fA-F]{4})/g, (_, h) =>
+        String.fromCharCode(parseInt(h, 16)));
+    } catch(e) {}
+
+    setProgress(100);
+
+    const outputName = metadata && metadata.fileName
+      ? metadata.fileName.replace(/\.py$/i, '') + '_unlocked.py'
+      : 'unlocked.py';
+
+    const outBlob = new Blob([codeText], { type: 'text/x-python' });
+    decResult = {
+      blob: outBlob,
+      name: outputName,
+      size: outBlob.size,
+      content: codeText,
+      metadata: metadata,
+      log: log
+    };
+
+    document.getElementById('dl-name-dec').textContent = outputName;
+    document.getElementById('dl-size-dec').textContent = formatSize(outBlob.size);
+    document.getElementById('dl-user-dec').textContent = metadata ? metadata.user : 'N/A';
+    document.getElementById('dl-py-dec').textContent = metadata ? metadata.pyVersion : 'N/A';
+    const panelDec = document.getElementById('download-panel-dec');
+    panelDec.classList.add('active');
+    panelDec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    const preview = document.getElementById('preview-box-dec');
+    preview.textContent =
+      '📋 Báo cáo giải mã:\n' +
+      '━━━━━━━━━━━━━━━━━━━━━━━\n' +
+      log.join('\n') +
+      '\n━━━━━━━━━━━━━━━━━━━━━━━\n' +
+      `📦 File: ${outputName}\n` +
+      `📊 Kích thước: ${formatSize(outBlob.size)}\n` +
+      (metadata ? `👤 User: ${metadata.user} | 🐍 Python: ${metadata.pyVersion}` : '');
+    preview.classList.add('active');
+
+    showStatus(`✅ Giải mã thành công! Nhấn "TẢI XUỐNG NGAY" để lưu file.`, 'success');
+  } catch (err) {
+    console.error(err);
+    showStatus('❌ ' + (err.message || 'Giải mã thất bại!'), 'error');
+  }
+});
+
+document.getElementById('btn-download-dec').addEventListener('click', () => {
+  if (!decResult) return showStatus('⚠️ Chưa có file!', 'error');
+  const ok = downloadBlob(decResult.blob, decResult.name, 'text/x-python');
+  if (ok) showStatus(`✅ Đang tải xuống: ${decResult.name}`, 'success');
+  else showStatus('❌ Tải xuống thất bại! Thử "Tải (cách 2)"', 'error');
+});
+
+document.getElementById('btn-download-dec2').addEventListener('click', () => {
+  if (!decResult) return showStatus('⚠️ Chưa có file!', 'error');
+  downloadBlobForce(decResult.blob, decResult.name, 'text/x-python');
+  showStatus(`✅ Đang tải xuống (cách 2): ${decResult.name}`, 'success');
+});
+
+document.getElementById('btn-preview-dec').addEventListener('click', () => {
+  if (!decResult) return;
+  const text = decResult.content.length > 5000
+    ? decResult.content.slice(0, 5000) + '\n\n... (tổng ' + decResult.content.length + ' ký tự)'
+    : decResult.content;
+  showModal(`👁️ Xem trước code: ${decResult.name}`, text);
+});
+</script>
+</body>
+</html>
