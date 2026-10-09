@@ -3,6 +3,10 @@ from tkinter import messagebox, scrolledtext
 import requests
 import threading
 import time
+import urllib3
+
+# Tắt cảnh báo SSL để tránh bị lỗi kết nối trên một số máy tính
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class TempMailApp:
     def __init__(self, root):
@@ -17,12 +21,9 @@ class TempMailApp:
         self.is_running = False
 
         # --- GIAO DIỆN (UI) ---
-        
-        # Tiêu đề
         title_label = tk.Label(root, text="HỆ THỐNG TẠO EMAIL TẠM THỜI", font=("Arial", 16, "bold"), bg="#f0f2f5", fg="#1877f2")
         title_label.pack(pady=10)
 
-        # Khung hiển thị Email
         frame_email = tk.Frame(root, bg="#f0f2f5")
         frame_email.pack(pady=5)
 
@@ -31,7 +32,6 @@ class TempMailApp:
         self.email_entry = tk.Entry(root, font=("Arial", 12), width=35, justify="center")
         self.email_entry.pack(pady=5)
 
-        # Các nút chức năng
         frame_btn = tk.Frame(root, bg="#f0f2f5")
         frame_btn.pack(pady=10)
 
@@ -44,39 +44,33 @@ class TempMailApp:
         self.btn_refresh = tk.Button(frame_btn, text="Làm Mới Hộp Thư", font=("Arial", 10), bg="#ffa000", fg="white", padx=10, pady=5, command=self.check_inbox)
         self.btn_refresh.pack(side=tk.LEFT, padx=5)
 
-        # Khung danh sách thư đến
         tk.Label(root, text="Hộp thư đến (Inbox):", font=("Arial", 11, "bold"), bg="#f0f2f5").pack(anchor="w", padx=30, pady=5)
         
         self.inbox_listbox = tk.Listbox(root, font=("Arial", 10), height=5)
         self.inbox_listbox.pack(fill=tk.X, padx=30, pady=5)
         self.inbox_listbox.bind('<<ListboxSelect>>', self.read_selected_email)
 
-        # Khung đọc nội dung chi tiết
         tk.Label(root, text="Nội dung chi tiết thư:", font=("Arial", 11, "bold"), bg="#f0f2f5").pack(anchor="w", padx=30, pady=5)
         
         self.content_text = scrolledtext.ScrolledText(root, font=("Arial", 10), height=8, wrap=tk.WORD)
         self.content_text.pack(fill=tk.BOTH, padx=30, pady=5, expand=True)
 
-        # Tạo sẵn email đầu tiên khi mở app
         self.generate_new_email()
 
     def generate_new_email(self):
-        """Tạo địa chỉ email ngẫu nhiên từ API"""
+        """Tạo địa chỉ email ngẫu nhiên từ API (đã thêm verify=False)"""
         try:
-            response = requests.get(f"{self.base_url}?action=genRandomMailbox&count=1")
+            response = requests.get(f"{self.base_url}?action=genRandomMailbox&count=1", verify=False)
             if response.status_code == 200:
                 email = response.json()[0]
                 self.login, self.domain = email.split('@')
                 
-                # Hiển thị lên ô nhập
                 self.email_entry.delete(0, tk.END)
                 self.email_entry.insert(0, email)
                 
-                # Reset hộp thư
                 self.inbox_listbox.delete(0, tk.END)
                 self.content_text.delete('1.0', tk.END)
                 
-                # Bắt đầu luồng tự động check thư ngầm
                 self.start_auto_check()
             else:
                 messagebox.showerror("Lỗi", "Không thể tạo email mới từ máy chủ!")
@@ -98,12 +92,11 @@ class TempMailApp:
         
         url = f"{self.base_url}?action=getMessages&login={self.login}&domain={self.domain}"
         try:
-            response = requests.get(url)
+            response = requests.get(url, verify=False)
             if response.status_code == 200:
                 messages = response.json()
                 self.inbox_listbox.delete(0, tk.END)
                 
-                # Lưu danh sách message ID để tra cứu
                 self.current_messages = messages
                 for msg in messages:
                     display_text = f"Từ: {msg['from']} | Tiêu đề: {msg['subject']}"
@@ -122,11 +115,10 @@ class TempMailApp:
 
         url = f"{self.base_url}?action=readMessage&login={self.login}&domain={self.domain}&id={msg_id}"
         try:
-            response = requests.get(url)
+            response = requests.get(url, verify=False)
             if response.status_code == 200:
                 detail = response.json()
                 
-                # Hiển thị nội dung ra ô text
                 self.content_text.delete('1.0', tk.END)
                 info = f"Người gửi: {detail.get('from')}\n" \
                        f"Chủ đề: {detail.get('subject')}\n" \
@@ -138,14 +130,13 @@ class TempMailApp:
             messagebox.showerror("Lỗi", f"Không thể đọc nội dung thư: {e}")
 
     def start_auto_check(self):
-        """Chạy vòng lặp ngầm kiểm tra thư mới mỗi 6 giây mà không đơ giao diện"""
+        """Chạy vòng lặp ngầm kiểm tra thư mới mỗi 6 giây"""
         self.is_running = True
         def background_worker():
             while self.is_running:
                 self.check_inbox()
                 time.sleep(6)
         
-        # Dùng Thread để ứng dụng không bị đơ khi gọi mạng
         threading.Thread(target=background_worker, daemon=True).start()
 
 if __name__ == "__main__":
